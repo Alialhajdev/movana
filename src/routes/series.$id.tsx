@@ -3,7 +3,7 @@ import { Heart, Play, Share2, ShoppingCart, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { SeriesRow } from "@/components/SeriesRow";
-import { byCategory, categoryMeta, findSeries } from "@/lib/data";
+import { byCategory, categoryMeta, findSeries, type Series } from "@/lib/data";
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/series/$id")({
 });
 
 function SeriesDetail() {
-  const s = Route.useLoaderData();
+  const s = Route.useLoaderData() as Series;
   const { t, lang } = useI18n();
   const { addToCart, toggleFavorite, isFavorite } = useStore();
   const fav = isFavorite(s.id);
