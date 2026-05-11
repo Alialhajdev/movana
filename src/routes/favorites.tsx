@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { SeriesCard } from "@/components/SeriesCard";
-import { findSeries } from "@/lib/data";
+
 import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/favorites")({
 
 function FavoritesPage() {
   const { t, lang } = useI18n();
-  const { favorites } = useStore();
+  const { favorites, findSeries } = useStore();
   const list = favorites.map(findSeries).filter(Boolean);
 
   return (

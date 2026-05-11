@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
-import { findSeries } from "@/lib/data";
+
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/profile")({
 
 function ProfilePage() {
   const { t, lang } = useI18n();
-  const { user, orders, favorites } = useStore();
+  const { user, orders, favorites, findSeries } = useStore();
   const nav = useNavigate();
 
   useEffect(() => {

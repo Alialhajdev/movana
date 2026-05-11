@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
-import { findSeries } from "@/lib/data";
+
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/cart")({
 
 function CartPage() {
   const { t, lang } = useI18n();
-  const { cart, setQty, removeFromCart, cartTotal } = useStore();
+  const { cart, setQty, removeFromCart, cartTotal, findSeries } = useStore();
 
   return (
     <>

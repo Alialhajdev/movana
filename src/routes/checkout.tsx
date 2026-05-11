@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Upload, Wallet, Truck, CreditCard } from "lucide-react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { Steps } from "./cart";
-import { findSeries } from "@/lib/data";
+
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore, type Order } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/checkout")({
 
 function CheckoutPage() {
   const { t, lang } = useI18n();
-  const { cart, cartTotal, user, placeOrder } = useStore();
+  const { cart, cartTotal, user, placeOrder, findSeries } = useStore();
   const nav = useNavigate();
   const [method, setMethod] = useState<Order["paymentMethod"]>("wallet_transfer");
   const [receipt, setReceipt] = useState<string>();

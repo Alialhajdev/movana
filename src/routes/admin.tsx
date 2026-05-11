@@ -1,24 +1,25 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Film, ImageIcon, MessageSquare, ShoppingBag, Users, CheckCircle, XCircle, Clock } from "lucide-react";
+import { BarChart3, Film, ImageIcon, MessageSquare, ShoppingBag, Users, Wallet } from "lucide-react";
 import { Header, Footer } from "@/components/Layout";
-import { findSeries, series as allSeries } from "@/lib/data";
 import { formatYER, useI18n } from "@/lib/i18n";
-import { useStore, type Order } from "@/lib/store";
+import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { SeriesManager } from "@/components/admin/SeriesManager";
+import { OrdersManager } from "@/components/admin/OrdersManager";
+import { PaymentsManager } from "@/components/admin/PaymentsManager";
+import { RequestsManager } from "@/components/admin/RequestsManager";
+import { SlidesManager } from "@/components/admin/SlidesManager";
 
-export const Route = createFileRoute("/admin")({
-  component: AdminPage,
-});
+export const Route = createFileRoute("/admin")({ component: AdminPage });
 
 type Tab = "dashboard" | "series" | "orders" | "payments" | "requests" | "slides";
 
 function AdminPage() {
   const { t, lang } = useI18n();
-  const { user, orders } = useStore();
+  const { user, orders, series, requests } = useStore();
   const nav = useNavigate();
   const [tab, setTab] = useState<Tab>("dashboard");
-  const [allOrders, setAllOrders] = useState<Order[]>([]);
 
   useEffect(() => {
     if (typeof window !== "undefined" && (!user || !user.isAdmin)) {
@@ -26,33 +27,27 @@ function AdminPage() {
     }
   }, [user, nav]);
 
-  // Combine current user orders with any persisted orders for demo
-  useEffect(() => setAllOrders(orders), [orders]);
-
   const stats = useMemo(() => {
-    const revenue = allOrders.filter((o) => o.status === "delivered").reduce((s, o) => s + o.total, 0);
+    const revenue = orders.filter((o) => o.status === "delivered").reduce((s, o) => s + o.total, 0);
+    const uniqueCustomers = new Set(orders.map((o) => o.customerEmail).filter(Boolean)).size;
     return {
-      users: 1248,
-      orders: allOrders.length,
-      seriesCount: allSeries.length,
+      users: Math.max(uniqueCustomers, 1),
+      orders: orders.length,
+      seriesCount: series.length,
       revenue,
+      pendingPayments: orders.filter((o) => o.paymentMethod === "wallet_transfer" && o.status === "pending").length,
+      openRequests: requests.filter((r) => r.status === "open").length,
     };
-  }, [allOrders]);
+  }, [orders, series, requests]);
 
   if (!user || !user.isAdmin) return null;
 
-  const updateStatus = (id: string, status: Order["status"]) => {
-    const next = allOrders.map((o) => (o.id === id ? { ...o, status } : o));
-    setAllOrders(next);
-    localStorage.setItem("movana_orders", JSON.stringify(next));
-  };
-
-  const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  const tabs: { id: Tab; label: string; icon: React.ReactNode; badge?: number }[] = [
     { id: "dashboard", label: t("admin_dashboard"), icon: <BarChart3 className="size-4" /> },
     { id: "series", label: t("admin_series"), icon: <Film className="size-4" /> },
-    { id: "orders", label: t("admin_orders"), icon: <ShoppingBag className="size-4" /> },
-    { id: "payments", label: t("admin_payments"), icon: <Users className="size-4" /> },
-    { id: "requests", label: t("admin_requests"), icon: <MessageSquare className="size-4" /> },
+    { id: "orders", label: t("admin_orders"), icon: <ShoppingBag className="size-4" />, badge: orders.length },
+    { id: "payments", label: t("admin_payments"), icon: <Wallet className="size-4" />, badge: stats.pendingPayments },
+    { id: "requests", label: t("admin_requests"), icon: <MessageSquare className="size-4" />, badge: stats.openRequests },
     { id: "slides", label: t("admin_slides"), icon: <ImageIcon className="size-4" /> },
   ];
 
@@ -78,7 +73,10 @@ function AdminPage() {
                   )}
                 >
                   {tb.icon}
-                  {tb.label}
+                  <span className="flex-1 text-start">{tb.label}</span>
+                  {tb.badge ? (
+                    <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-bold", tab === tb.id ? "bg-white/20" : "bg-primary/20 text-primary")}>{tb.badge}</span>
+                  ) : null}
                 </button>
               ))}
             </nav>
@@ -95,105 +93,50 @@ function AdminPage() {
                 </div>
                 <div className="glass rounded-2xl p-6">
                   <h3 className="font-bold mb-4">{lang === "ar" ? "نمو الطلبات (آخر 7 أيام)" : "Orders growth (last 7 days)"}</h3>
-                  <div className="flex items-end gap-2 h-40">
-                    {[40, 65, 50, 80, 70, 95, 85].map((h, i) => (
-                      <div key={i} className="flex-1 rounded-t-md gradient-red opacity-90 hover:opacity-100 transition" style={{ height: `${h}%` }} />
-                    ))}
-                  </div>
+                  <Last7Chart />
                 </div>
               </div>
             )}
-
-            {tab === "orders" && (
-              <div className="glass rounded-2xl p-4 overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="text-muted-foreground text-xs uppercase">
-                    <tr><th className="text-start p-3">#</th><th className="text-start p-3">{lang === "ar" ? "العناصر" : "Items"}</th><th className="text-start p-3">{t("cart_total")}</th><th className="text-start p-3">{t("pay_method")}</th><th className="text-start p-3">{t("pay_status")}</th><th className="p-3" /></tr>
-                  </thead>
-                  <tbody>
-                    {allOrders.length === 0 && (
-                      <tr><td colSpan={6} className="p-10 text-center text-muted-foreground">{lang === "ar" ? "لا توجد طلبات" : "No orders"}</td></tr>
-                    )}
-                    {allOrders.map((o) => (
-                      <tr key={o.id} className="border-t border-border">
-                        <td className="p-3 font-mono text-xs">{o.id}</td>
-                        <td className="p-3">{o.items.map((i) => findSeries(i.seriesId)?.title[lang]).join(", ")}</td>
-                        <td className="p-3 text-primary font-bold">{formatYER(o.total, lang)}</td>
-                        <td className="p-3 text-xs">{t(`pay_${o.paymentMethod === "wallet_transfer" ? "wallet_transfer" : o.paymentMethod === "cod" ? "cod" : "wallet"}` as "pay_cod")}</td>
-                        <td className="p-3">
-                          <span className={cn(
-                            "rounded-full px-2 py-1 text-xs font-bold",
-                            o.status === "delivered" && "bg-emerald-500/15 text-emerald-400",
-                            o.status === "rejected" && "bg-destructive/15 text-destructive",
-                            o.status === "pending" && "bg-[var(--gold)]/15 text-[var(--gold)]"
-                          )}>{t(`status_${o.status}` as "status_pending")}</span>
-                        </td>
-                        <td className="p-3">
-                          <div className="flex gap-1 justify-end">
-                            <button onClick={() => updateStatus(o.id, "delivered")} className="grid size-8 place-items-center rounded-md bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/30" title="Deliver"><CheckCircle className="size-4" /></button>
-                            <button onClick={() => updateStatus(o.id, "rejected")} className="grid size-8 place-items-center rounded-md bg-destructive/15 text-destructive hover:bg-destructive/30" title="Reject"><XCircle className="size-4" /></button>
-                            <button onClick={() => updateStatus(o.id, "pending")} className="grid size-8 place-items-center rounded-md bg-[var(--gold)]/15 text-[var(--gold)] hover:bg-[var(--gold)]/30" title="Pending"><Clock className="size-4" /></button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {tab === "series" && (
-              <div className="glass rounded-2xl p-4 overflow-x-auto">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold">{t("admin_series")}</h3>
-                  <button className="rounded-md gradient-red px-4 py-2 text-xs font-bold">+ {lang === "ar" ? "إضافة مسلسل" : "New series"}</button>
-                </div>
-                <table className="w-full text-sm">
-                  <thead className="text-muted-foreground text-xs uppercase"><tr><th className="text-start p-3">{lang === "ar" ? "المسلسل" : "Title"}</th><th className="text-start p-3">{lang === "ar" ? "الفئة" : "Category"}</th><th className="text-start p-3">IMDB</th><th className="text-start p-3">{lang === "ar" ? "السعر" : "Price"}</th></tr></thead>
-                  <tbody>
-                    {allSeries.map((s) => (
-                      <tr key={s.id} className="border-t border-border">
-                        <td className="p-3">{s.title[lang]}</td>
-                        <td className="p-3 text-xs text-muted-foreground">{s.category}</td>
-                        <td className="p-3">{s.imdb}</td>
-                        <td className="p-3 text-primary font-bold">{formatYER(s.price, lang)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {tab === "payments" && (
-              <div className="glass rounded-2xl p-6 text-center text-muted-foreground">
-                {lang === "ar" ? "لا توجد إيصالات قيد المراجعة حالياً." : "No payment receipts pending review."}
-              </div>
-            )}
-
-            {tab === "requests" && (
-              <div className="glass rounded-2xl p-6 text-center text-muted-foreground">
-                {lang === "ar" ? "لا توجد طلبات مسلسلات جديدة." : "No new series requests."}
-              </div>
-            )}
-
-            {tab === "slides" && (
-              <div className="grid sm:grid-cols-3 gap-4">
-                {allSeries.filter((s) => s.featured).map((s) => (
-                  <div key={s.id} className={`glass rounded-xl overflow-hidden`}>
-                    <div className={`aspect-video bg-gradient-to-br ${s.posterColor}`} />
-                    <div className="p-3">
-                      <p className="font-bold text-sm">{s.title[lang]}</p>
-                      <p className="text-xs text-muted-foreground">{s.category}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            {tab === "series" && <SeriesManager />}
+            {tab === "orders" && <OrdersManager />}
+            {tab === "payments" && <PaymentsManager />}
+            {tab === "requests" && <RequestsManager />}
+            {tab === "slides" && <SlidesManager />}
           </section>
         </div>
       </main>
       <Footer />
     </>
+  );
+}
+
+function Last7Chart() {
+  const { orders } = useStore();
+  const days = useMemo(() => {
+    const arr = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() - (6 - i));
+      return { ts: d.getTime(), count: 0 };
+    });
+    orders.forEach((o) => {
+      const day = new Date(o.createdAt);
+      day.setHours(0, 0, 0, 0);
+      const slot = arr.find((d) => d.ts === day.getTime());
+      if (slot) slot.count++;
+    });
+    return arr;
+  }, [orders]);
+  const max = Math.max(1, ...days.map((d) => d.count));
+  return (
+    <div className="flex items-end gap-2 h-40">
+      {days.map((d) => (
+        <div key={d.ts} className="flex-1 flex flex-col items-center gap-1">
+          <div className="w-full rounded-t-md gradient-red opacity-90 hover:opacity-100 transition" style={{ height: `${(d.count / max) * 100}%`, minHeight: 4 }} />
+          <span className="text-[10px] text-muted-foreground">{new Date(d.ts).toLocaleDateString(undefined, { weekday: "short" })}</span>
+        </div>
+      ))}
+    </div>
   );
 }
 

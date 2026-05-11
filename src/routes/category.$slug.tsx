@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { SeriesCard } from "@/components/SeriesCard";
-import { byCategory, categoryMeta, newest, series as allSeries, trending, type Category } from "@/lib/data";
+import { categoryMeta, type Category } from "@/lib/data";
 import { useI18n } from "@/lib/i18n";
+import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/category/$slug")({
   component: CategoryPage,
@@ -14,6 +15,7 @@ const SPECIAL = new Set(["trending", "new", "top"]);
 function CategoryPage() {
   const { slug } = Route.useParams();
   const { t, lang } = useI18n();
+  const { series: allSeries } = useStore();
   const [year, setYear] = useState<string>("all");
   const [minRating, setMinRating] = useState(0);
   const [sort, setSort] = useState<"new" | "rating" | "popular">("new");
@@ -21,8 +23,10 @@ function CategoryPage() {
 
   const list = useMemo(() => {
     let base = SPECIAL.has(slug)
-      ? slug === "trending" ? trending() : slug === "new" ? newest() : allSeries.filter((s) => s.topWatched)
-      : byCategory(slug as Category);
+      ? slug === "trending" ? allSeries.filter((s) => s.trending)
+        : slug === "new" ? allSeries.filter((s) => s.isNew)
+        : allSeries.filter((s) => s.topWatched)
+      : allSeries.filter((s) => s.category === (slug as Category));
 
     if (q.trim()) {
       const needle = q.toLowerCase();
@@ -36,7 +40,7 @@ function CategoryPage() {
     if (sort === "rating") base = [...base].sort((a, b) => b.imdb - a.imdb);
     if (sort === "new") base = [...base].sort((a, b) => b.year - a.year);
     return base;
-  }, [slug, q, year, minRating, sort]);
+  }, [slug, q, year, minRating, sort, allSeries]);
 
   const title = SPECIAL.has(slug)
     ? slug === "trending" ? t("cat_trending") : slug === "new" ? t("cat_new") : t("cat_top")
