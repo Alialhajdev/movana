@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { Field } from "./login";
 import { useI18n } from "@/lib/i18n";
+import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/requests")({
   component: RequestsPage,
@@ -11,15 +12,14 @@ export const Route = createFileRoute("/requests")({
 
 function RequestsPage() {
   const { t, lang } = useI18n();
+  const { submitRequest, user } = useStore();
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState("");
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title) return;
-    const list = JSON.parse(localStorage.getItem("movana_requests") || "[]");
-    list.unshift({ id: Date.now(), title, details, status: "open", createdAt: Date.now() });
-    localStorage.setItem("movana_requests", JSON.stringify(list));
+    submitRequest({ title, details, userEmail: user?.email });
     setTitle(""); setDetails("");
     toast.success(lang === "ar" ? "تم إرسال طلبك" : "Request submitted");
   };
