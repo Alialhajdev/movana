@@ -3,8 +3,9 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { SeriesCard } from "@/components/SeriesCard";
-import { categoryMeta, series as allSeries } from "@/lib/data";
+import { categoryMeta } from "@/lib/data";
 import { useI18n } from "@/lib/i18n";
+import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/search")({
   component: SearchPage,
@@ -15,6 +16,7 @@ function SearchPage() {
   const { q: initial } = Route.useSearch();
   const [q, setQ] = useState(initial);
   const { t, lang } = useI18n();
+  const { series: allSeries } = useStore();
 
   const results = useMemo(() => {
     const needle = q.trim().toLowerCase();
