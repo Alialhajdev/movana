@@ -29,7 +29,7 @@ function SearchPage() {
       categoryMeta[s.category].en.toLowerCase().includes(needle) ||
       String(s.year).includes(needle)
     );
-  }, [q]);
+  }, [q, allSeries]);
 
   return (
     <>
