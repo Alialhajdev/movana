@@ -1,31 +1,39 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { Heart, Play, Share2, ShoppingCart, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { SeriesRow } from "@/components/SeriesRow";
-import { byCategory, categoryMeta, findSeries, type Series } from "@/lib/data";
+import { categoryMeta } from "@/lib/data";
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/series/$id")({
   component: SeriesDetail,
-  loader: ({ params }) => {
-    const s = findSeries(params.id);
-    if (!s) throw notFound();
-    return s;
-  },
-  notFoundComponent: () => (
-    <div className="grid min-h-screen place-items-center text-muted-foreground">Series not found</div>
-  ),
 });
 
 function SeriesDetail() {
-  const s = Route.useLoaderData() as Series;
+  const { id } = Route.useParams();
   const { t, lang } = useI18n();
-  const { addToCart, toggleFavorite, isFavorite } = useStore();
+  const { addToCart, toggleFavorite, isFavorite, findSeries, series: allSeries } = useStore();
+  const s = findSeries(id);
+  const related = useMemo(
+    () => (s ? allSeries.filter((x) => x.category === s.category && x.id !== s.id) : []),
+    [s, allSeries]
+  );
+  if (!s) {
+    return (
+      <>
+        <Header />
+        <main className="pt-32 pb-24 mx-auto max-w-[1600px] px-4 md:px-10 text-center text-muted-foreground">
+          {lang === "ar" ? "المسلسل غير موجود" : "Series not found"}
+        </main>
+        <Footer />
+      </>
+    );
+  }
   const fav = isFavorite(s.id);
-  const related = byCategory(s.category).filter((x) => x.id !== s.id);
 
   const share = () => {
     if (navigator.share) navigator.share({ title: s.title[lang], url: window.location.href }).catch(() => {});
