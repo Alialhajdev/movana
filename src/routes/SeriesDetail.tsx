@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, useParams } from "react-router-dom";
 import { useMemo } from "react";
 import { Heart, Play, Share2, ShoppingCart, Star } from "lucide-react";
 import { toast } from "sonner";
@@ -9,12 +9,8 @@ import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/series/$id")({
-  component: SeriesDetail,
-});
-
-function SeriesDetail() {
-  const { id } = Route.useParams();
+export default function SeriesDetail() {
+  const { id = "" } = useParams<{ id: string }>();
   const { t, lang } = useI18n();
   const { addToCart, toggleFavorite, isFavorite, findSeries, series: allSeries } = useStore();
   const s = findSeries(id);
@@ -52,7 +48,7 @@ function SeriesDetail() {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
           <div className="relative z-10 mx-auto flex h-full max-w-[1600px] items-end px-4 md:px-10 pb-12">
             <div className="max-w-3xl">
-              <Link to="/category/$slug" params={{ slug: s.category }} className="inline-block rounded-full gradient-red px-3 py-1 text-xs font-bold uppercase tracking-wider">
+              <Link to={`/category/${s.category}`} className="inline-block rounded-full gradient-red px-3 py-1 text-xs font-bold uppercase tracking-wider">
                 {categoryMeta[s.category][lang]}
               </Link>
               <h1 className="font-display mt-4 text-5xl md:text-7xl text-white text-shadow-hero">{s.title[lang]}</h1>
@@ -64,9 +60,7 @@ function SeriesDetail() {
                 <span>· {s.seasons} {t("seasons")}</span>
                 <span>· {s.episodes} {t("episodes")}</span>
                 <span className="rounded bg-white/10 px-2 py-0.5 text-xs">{s.source}</span>
-                {s.genres.map((g) => (
-                  <span key={g.en} className="rounded bg-white/5 px-2 py-0.5 text-xs">{g[lang]}</span>
-                ))}
+                {s.genres.map((g) => <span key={g.en} className="rounded bg-white/5 px-2 py-0.5 text-xs">{g[lang]}</span>)}
               </div>
               <p className="mt-5 max-w-2xl text-base md:text-lg text-white/85">{s.description[lang]}</p>
               <div className="mt-3 text-2xl font-bold text-white">{formatYER(s.price, lang)}</div>
@@ -77,10 +71,7 @@ function SeriesDetail() {
                 >
                   <ShoppingCart className="size-4" /> {t("hero_add_cart")}
                 </button>
-                <button
-                  onClick={() => toggleFavorite(s.id)}
-                  className="inline-flex items-center gap-2 rounded-md glass px-5 py-3 text-sm font-bold hover:bg-white/10"
-                >
+                <button onClick={() => toggleFavorite(s.id)} className="inline-flex items-center gap-2 rounded-md glass px-5 py-3 text-sm font-bold hover:bg-white/10">
                   <Heart className={cn("size-4", fav && "fill-primary text-primary")} /> {t("hero_add_fav")}
                 </button>
                 <button onClick={share} className="grid size-12 place-items-center rounded-full glass hover:bg-white/10">
@@ -94,13 +85,7 @@ function SeriesDetail() {
         <section className="mx-auto max-w-[1600px] px-4 md:px-10 mt-12">
           <h2 className="font-display text-3xl mb-4 flex items-center gap-2"><Play className="size-6 text-primary fill-current" /> {t("trailer")}</h2>
           <div className="aspect-video w-full overflow-hidden rounded-xl shadow-card">
-            <iframe
-              src={s.trailerUrl}
-              title="trailer"
-              className="h-full w-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+            <iframe src={s.trailerUrl} title="trailer" className="h-full w-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
           </div>
         </section>
 
@@ -108,10 +93,7 @@ function SeriesDetail() {
           <h2 className="font-display text-3xl mb-4">{t("screenshots")}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[0, 1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className={cn("aspect-video rounded-lg bg-gradient-to-br shadow-card overflow-hidden cursor-pointer transition hover:scale-105", s.posterColor)}
-              />
+              <div key={i} className={cn("aspect-video rounded-lg bg-gradient-to-br shadow-card overflow-hidden cursor-pointer transition hover:scale-105", s.posterColor)} />
             ))}
           </div>
         </section>

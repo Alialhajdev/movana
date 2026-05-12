@@ -1,22 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { HeroSlider } from "@/components/HeroSlider";
 import { SeriesRow } from "@/components/SeriesRow";
+import { OffersSection } from "@/components/OffersSection";
 import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
-export const Route = createFileRoute("/")({
-  component: Index,
-  head: () => ({
-    meta: [
-      { title: "Movana — اكتشف أفضل المسلسلات" },
-      { name: "description", content: "تصفح أفضل المسلسلات الكورية والتركية والأجنبية واطلبها بالعملة اليمنية." },
-    ],
-  }),
-});
-
-function Index() {
+export default function Index() {
   const { t } = useI18n();
   const { series } = useStore();
   const trending = useMemo(() => series.filter((s) => s.trending), [series]);
@@ -31,6 +21,7 @@ function Index() {
       <main className="pb-24 md:pb-0">
         <HeroSlider />
         <div className="-mt-20 relative z-10">
+          <OffersSection />
           {trending.length > 0 && <SeriesRow title={t("cat_trending")} items={trending} viewMoreTo="/category/trending" />}
           {k.length > 0 && <SeriesRow title={t("cat_korean")} items={k} viewMoreTo="/category/korean" />}
           {tr.length > 0 && <SeriesRow title={t("cat_turkish")} items={tr} viewMoreTo="/category/turkish" />}

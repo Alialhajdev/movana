@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, useParams } from "react-router-dom";
 import { useMemo, useState } from "react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { SeriesCard } from "@/components/SeriesCard";
@@ -6,14 +6,10 @@ import { categoryMeta, type Category } from "@/lib/data";
 import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
-export const Route = createFileRoute("/category/$slug")({
-  component: CategoryPage,
-});
-
 const SPECIAL = new Set(["trending", "new", "top"]);
 
-function CategoryPage() {
-  const { slug } = Route.useParams();
+export default function CategoryPage() {
+  const { slug = "" } = useParams<{ slug: string }>();
   const { t, lang } = useI18n();
   const { series: allSeries } = useStore();
   const [year, setYear] = useState<string>("all");
@@ -62,12 +58,7 @@ function CategoryPage() {
 
         <section className="mx-auto max-w-[1600px] px-4 md:px-10 mt-8">
           <div className="glass rounded-2xl p-4 flex flex-wrap items-center gap-3">
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder={t("search_placeholder")}
-              className="flex-1 min-w-[200px] rounded-md bg-input px-3 py-2 text-sm outline-none"
-            />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("search_placeholder")} className="flex-1 min-w-[200px] rounded-md bg-input px-3 py-2 text-sm outline-none" />
             <select value={year} onChange={(e) => setYear(e.target.value)} className="rounded-md bg-input px-3 py-2 text-sm">
               <option value="all">{t("year")} · {t("all")}</option>
               {years.map((y) => <option key={y} value={y}>{y}</option>)}
@@ -86,12 +77,8 @@ function CategoryPage() {
           </div>
 
           <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-5">
-            {list.map((s) => (
-              <SeriesCard key={s.id} series={s} className="w-full" />
-            ))}
-            {list.length === 0 && (
-              <p className="col-span-full text-center text-muted-foreground py-20">No results</p>
-            )}
+            {list.map((s) => <SeriesCard key={s.id} series={s} className="w-full" />)}
+            {list.length === 0 && <p className="col-span-full text-center text-muted-foreground py-20">No results</p>}
           </div>
         </section>
       </main>

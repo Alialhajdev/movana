@@ -35,6 +35,23 @@ export interface SeriesRequest {
   userEmail?: string;
 }
 
+export interface Offer {
+  id: string;
+  titleAr: string;
+  titleEn: string;
+  descriptionAr: string;
+  descriptionEn: string;
+  badgeAr?: string;
+  badgeEn?: string;
+  discountPct?: number;
+  gradient: string;
+  ctaUrl?: string;
+  seriesId?: string;
+  active: boolean;
+  expiresAt?: number;
+  order: number;
+}
+
 export interface Slide {
   id: string;
   titleAr: string;
@@ -85,6 +102,12 @@ interface Store {
   updateSlide: (id: string, patch: Partial<Slide>) => void;
   deleteSlide: (id: string) => void;
   reorderSlide: (id: string, dir: -1 | 1) => void;
+  // offers
+  offers: Offer[];
+  addOffer: (o: Omit<Offer, "id" | "order">) => void;
+  updateOffer: (id: string, patch: Partial<Offer>) => void;
+  deleteOffer: (id: string) => void;
+  reorderOffer: (id: string, dir: -1 | 1) => void;
 }
 
 const Ctx = createContext<Store | null>(null);
@@ -112,6 +135,51 @@ const defaultSlides = (): Slide[] =>
     order: i,
   }));
 
+const defaultOffers = (): Offer[] => [
+  {
+    id: "offer-1",
+    titleAr: "عرض الافتتاح",
+    titleEn: "Launch Special",
+    descriptionAr: "خصم 30% على جميع المسلسلات الكورية لفترة محدودة",
+    descriptionEn: "30% off all Korean series for a limited time",
+    badgeAr: "الأكثر طلباً",
+    badgeEn: "Most popular",
+    discountPct: 30,
+    gradient: "from-rose-700 via-red-900 to-zinc-950",
+    ctaUrl: "/category/korean",
+    active: true,
+    order: 0,
+  },
+  {
+    id: "offer-2",
+    titleAr: "باقة العائلة",
+    titleEn: "Family Bundle",
+    descriptionAr: "اطلب 3 مسلسلات بسعر اثنين فقط",
+    descriptionEn: "Get 3 series for the price of 2",
+    badgeAr: "وفر أكثر",
+    badgeEn: "Save more",
+    discountPct: 33,
+    gradient: "from-amber-700 via-rose-900 to-zinc-950",
+    ctaUrl: "/category/turkish",
+    active: true,
+    order: 1,
+  },
+  {
+    id: "offer-3",
+    titleAr: "تخفيضات نهاية الأسبوع",
+    titleEn: "Weekend Deals",
+    descriptionAr: "خصم 20% على المسلسلات الأجنبية حتى الأحد",
+    descriptionEn: "20% off international series until Sunday",
+    badgeAr: "وقت محدود",
+    badgeEn: "Limited time",
+    discountPct: 20,
+    gradient: "from-violet-700 via-fuchsia-900 to-zinc-950",
+    ctaUrl: "/category/english",
+    active: true,
+    order: 2,
+  },
+];
+
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -120,6 +188,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [series, setSeries] = useState<Series[]>(seedSeries);
   const [requests, setRequests] = useState<SeriesRequest[]>([]);
   const [slides, setSlides] = useState<Slide[]>(defaultSlides());
+  const [offers, setOffers] = useState<Offer[]>(defaultOffers());
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -130,6 +199,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setSeries(read<Series[]>("movana_series", seedSeries));
     setRequests(read<SeriesRequest[]>("movana_requests", []));
     setSlides(read<Slide[]>("movana_slides", defaultSlides()));
+    setOffers(read<Offer[]>("movana_offers", defaultOffers()));
     setHydrated(true);
   }, []);
 
@@ -140,6 +210,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => { if (hydrated) localStorage.setItem("movana_series", JSON.stringify(series)); }, [series, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("movana_requests", JSON.stringify(requests)); }, [requests, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("movana_slides", JSON.stringify(slides)); }, [slides, hydrated]);
+  useEffect(() => { if (hydrated) localStorage.setItem("movana_offers", JSON.stringify(offers)); }, [offers, hydrated]);
 
   const findSeries = (id: string) => series.find((s) => s.id === id);
 
@@ -225,6 +296,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setSlides((arr) => {
         const sorted = [...arr].sort((a, b) => a.order - b.order);
         const idx = sorted.findIndex((s) => s.id === id);
+        const swap = idx + dir;
+        if (idx < 0 || swap < 0 || swap >= sorted.length) return arr;
+        const a = sorted[idx], b = sorted[swap];
+        const ao = a.order; a.order = b.order; b.order = ao;
+        return [...sorted];
+      }),
+    offers,
+    addOffer: (o) =>
+      setOffers((arr) => [...arr, { id: `offer-${Date.now().toString(36)}`, order: arr.length, ...o }]),
+    updateOffer: (id, patch) =>
+      setOffers((arr) => arr.map((o) => (o.id === id ? { ...o, ...patch } : o))),
+    deleteOffer: (id) => setOffers((arr) => arr.filter((o) => o.id !== id)),
+    reorderOffer: (id, dir) =>
+      setOffers((arr) => {
+        const sorted = [...arr].sort((a, b) => a.order - b.order);
+        const idx = sorted.findIndex((o) => o.id === id);
         const swap = idx + dir;
         if (idx < 0 || swap < 0 || swap >= sorted.length) return arr;
         const a = sorted[idx], b = sorted[swap];

@@ -1,15 +1,11 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { Field } from "./login";
 import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
-export const Route = createFileRoute("/register")({
-  component: RegisterPage,
-});
-
-function RegisterPage() {
+export default function RegisterPage() {
   const { t } = useI18n();
   const { login } = useStore();
   const nav = useNavigate();
@@ -22,7 +18,7 @@ function RegisterPage() {
     e.preventDefault();
     if (!name || !email || !password) return;
     login(email, name);
-    nav({ to: "/" });
+    nav("/");
   };
 
   return (

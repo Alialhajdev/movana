@@ -1,16 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, useParams } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { Steps } from "./cart";
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
-export const Route = createFileRoute("/order-confirm/$id")({
-  component: OrderConfirm,
-});
-
-function OrderConfirm() {
-  const { id } = Route.useParams();
+export default function OrderConfirm() {
+  const { id = "" } = useParams<{ id: string }>();
   const { t, lang } = useI18n();
   const { orders } = useStore();
   const order = orders.find((o) => o.id === id);

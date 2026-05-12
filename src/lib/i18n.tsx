@@ -138,6 +138,15 @@ export const dict: Dict = {
   request_status: { ar: "حالة الطلب", en: "Status" },
   status_open: { ar: "مفتوح", en: "Open" },
   status_approved: { ar: "مقبول", en: "Approved" },
+  admin_offers: { ar: "العروض", en: "Offers" },
+  add_offer: { ar: "إضافة عرض", en: "New offer" },
+  offers_title: { ar: "أحدث العروض والخصومات", en: "Latest Offers & Deals" },
+  offers_count: { ar: "عرض نشط", en: "active" },
+  offers_cta: { ar: "اكتشف العرض", en: "Explore offer" },
+  offer_badge_ar: { ar: "شارة (عربي)", en: "Badge (Arabic)" },
+  offer_badge_en: { ar: "شارة (إنجليزي)", en: "Badge (English)" },
+  offer_discount: { ar: "نسبة الخصم %", en: "Discount %" },
+  offer_cta_url: { ar: "رابط العرض", en: "CTA URL" },
 };
 
 interface I18nCtx {

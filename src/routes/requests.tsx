@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
@@ -6,11 +5,7 @@ import { Field } from "./login";
 import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
-export const Route = createFileRoute("/requests")({
-  component: RequestsPage,
-});
-
-function RequestsPage() {
+export default function RequestsPage() {
   const { t, lang } = useI18n();
   const { submitRequest, user } = useStore();
   const [title, setTitle] = useState("");
@@ -34,12 +29,7 @@ function RequestsPage() {
           <Field label={lang === "ar" ? "اسم المسلسل" : "Series name"} value={title} onChange={setTitle} required />
           <label className="block">
             <span className="text-xs text-muted-foreground mb-1 block">{lang === "ar" ? "تفاصيل إضافية" : "Additional details"}</span>
-            <textarea
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              rows={5}
-              className="w-full rounded-md bg-input px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
-            />
+            <textarea value={details} onChange={(e) => setDetails(e.target.value)} rows={5} className="w-full rounded-md bg-input px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary" />
           </label>
           <button className="w-full rounded-md gradient-red py-3 font-bold shadow-glow">{t("send")}</button>
         </form>

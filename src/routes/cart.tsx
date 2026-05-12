@@ -1,15 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
-
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
-export const Route = createFileRoute("/cart")({
-  component: CartPage,
-});
-
-function CartPage() {
+export default function CartPage() {
   const { t, lang } = useI18n();
   const { cart, setQty, removeFromCart, cartTotal, findSeries } = useStore();
 
@@ -23,9 +18,7 @@ function CartPage() {
         {cart.length === 0 ? (
           <div className="glass rounded-2xl p-12 text-center">
             <p className="text-muted-foreground mb-6">{t("cart_empty")}</p>
-            <Link to="/" className="inline-block rounded-md gradient-red px-5 py-2.5 text-sm font-bold">
-              {t("continue_shopping")}
-            </Link>
+            <Link to="/" className="inline-block rounded-md gradient-red px-5 py-2.5 text-sm font-bold">{t("continue_shopping")}</Link>
           </div>
         ) : (
           <div className="grid lg:grid-cols-[1fr_320px] gap-6">
@@ -37,9 +30,7 @@ function CartPage() {
                   <div key={it.seriesId} className="glass rounded-xl p-3 flex items-center gap-4">
                     <div className={`h-24 w-16 shrink-0 rounded-md bg-gradient-to-br ${s.posterColor}`} />
                     <div className="flex-1 min-w-0">
-                      <Link to="/series/$id" params={{ id: s.id }} className="font-bold hover:text-primary line-clamp-1">
-                        {s.title[lang]}
-                      </Link>
+                      <Link to={`/series/${s.id}`} className="font-bold hover:text-primary line-clamp-1">{s.title[lang]}</Link>
                       <p className="text-xs text-muted-foreground">{s.year} · {s.seasons} {t("seasons")}</p>
                       <p className="mt-1 text-primary font-bold">{formatYER(s.price, lang)}</p>
                     </div>
@@ -61,9 +52,7 @@ function CartPage() {
               <div className="flex justify-between text-sm text-muted-foreground"><span>{t("cart_subtotal")}</span><span>{formatYER(cartTotal, lang)}</span></div>
               <div className="my-4 border-t border-border" />
               <div className="flex justify-between text-lg font-bold"><span>{t("cart_total")}</span><span className="text-primary">{formatYER(cartTotal, lang)}</span></div>
-              <Link to="/checkout" className="mt-5 block text-center rounded-md gradient-red px-4 py-3 text-sm font-bold shadow-glow">
-                {t("cart_checkout")}
-              </Link>
+              <Link to="/checkout" className="mt-5 block text-center rounded-md gradient-red px-4 py-3 text-sm font-bold shadow-glow">{t("cart_checkout")}</Link>
             </aside>
           </div>
         )}

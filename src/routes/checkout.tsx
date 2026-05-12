@@ -1,19 +1,14 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Upload, Wallet, Truck, CreditCard } from "lucide-react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { Steps } from "./cart";
-
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore, type Order } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/checkout")({
-  component: CheckoutPage,
-});
-
-function CheckoutPage() {
+export default function CheckoutPage() {
   const { t, lang } = useI18n();
   const { cart, cartTotal, user, placeOrder, findSeries } = useStore();
   const nav = useNavigate();
@@ -21,7 +16,7 @@ function CheckoutPage() {
   const [receipt, setReceipt] = useState<string>();
 
   if (!user) {
-    if (typeof window !== "undefined") nav({ to: "/login", search: { next: "/checkout" } });
+    if (typeof window !== "undefined") nav("/login?next=/checkout");
     return null;
   }
 
@@ -32,7 +27,7 @@ function CheckoutPage() {
       return;
     }
     const order = placeOrder(method, receipt);
-    nav({ to: "/order-confirm/$id", params: { id: order.id } });
+    nav(`/order-confirm/${order.id}`);
   };
 
   const methods = [
@@ -72,23 +67,14 @@ function CheckoutPage() {
             {(method === "wallet_transfer" || method === "wallet") && (
               <div className="glass rounded-2xl p-5 space-y-4">
                 <h3 className="font-bold">{t("pay_account")}</h3>
-                <div className="rounded-lg bg-input p-4 font-mono text-lg tracking-wider">
-                  Movana Wallet · 0773 123 456
-                </div>
+                <div className="rounded-lg bg-input p-4 font-mono text-lg tracking-wider">Movana Wallet · 0773 123 456</div>
                 <p className="text-xs text-muted-foreground">
-                  {lang === "ar"
-                    ? "حول المبلغ إلى الرقم أعلاه ثم ارفع لقطة شاشة لإيصال التحويل."
-                    : "Transfer the amount to the number above and upload a screenshot of the receipt."}
+                  {lang === "ar" ? "حول المبلغ إلى الرقم أعلاه ثم ارفع لقطة شاشة لإيصال التحويل." : "Transfer the amount to the number above and upload a screenshot of the receipt."}
                 </p>
                 <label className="flex items-center gap-3 rounded-lg border-2 border-dashed border-border p-4 cursor-pointer hover:border-primary transition">
                   <Upload className="size-5 text-primary" />
                   <span className="text-sm">{receipt ?? t("pay_upload")}</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => setReceipt(e.target.files?.[0]?.name)}
-                  />
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => setReceipt(e.target.files?.[0]?.name)} />
                 </label>
               </div>
             )}
@@ -110,9 +96,7 @@ function CheckoutPage() {
               <span>{t("cart_total")}</span>
               <span className="text-primary">{formatYER(cartTotal, lang)}</span>
             </div>
-            <button type="submit" className="w-full rounded-md gradient-red px-4 py-3 text-sm font-bold shadow-glow">
-              {t("step_confirm")}
-            </button>
+            <button type="submit" className="w-full rounded-md gradient-red px-4 py-3 text-sm font-bold shadow-glow">{t("step_confirm")}</button>
           </aside>
         </form>
       </main>
