@@ -35,6 +35,23 @@ export interface SeriesRequest {
   userEmail?: string;
 }
 
+export interface Offer {
+  id: string;
+  titleAr: string;
+  titleEn: string;
+  descriptionAr: string;
+  descriptionEn: string;
+  badgeAr?: string;
+  badgeEn?: string;
+  discountPct?: number;
+  gradient: string;
+  ctaUrl?: string;
+  seriesId?: string;
+  active: boolean;
+  expiresAt?: number;
+  order: number;
+}
+
 export interface Slide {
   id: string;
   titleAr: string;
@@ -85,6 +102,12 @@ interface Store {
   updateSlide: (id: string, patch: Partial<Slide>) => void;
   deleteSlide: (id: string) => void;
   reorderSlide: (id: string, dir: -1 | 1) => void;
+  // offers
+  offers: Offer[];
+  addOffer: (o: Omit<Offer, "id" | "order">) => void;
+  updateOffer: (id: string, patch: Partial<Offer>) => void;
+  deleteOffer: (id: string) => void;
+  reorderOffer: (id: string, dir: -1 | 1) => void;
 }
 
 const Ctx = createContext<Store | null>(null);
