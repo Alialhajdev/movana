@@ -497,7 +497,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setFavorites((f) => (has ? f.filter((x) => x !== id) : [...f, id]));
       if (user) {
         if (has) supabase.from("favorites").delete().eq("user_id", user.id).eq("series_id", id);
-        else supabase.from("favorites").insert({ user_id: user.id, series_id: id });
+        else supabase.from("favorites").insert({ user_id: user.id, series_id: id } as any);
       }
     },
 
@@ -573,7 +573,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (!user) return;
       const { data } = await supabase
         .from("series_requests")
-        .insert({ user_id: user.id, user_email: r.userEmail ?? user.email, title: r.title, details: r.details })
+        .insert({ user_id: user.id, user_email: r.userEmail ?? user.email, title: r.title, details: r.details } as any)
         .select("*")
         .single();
       if (data) setRequests((list) => [mapRequest(data), ...list]);
@@ -671,7 +671,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     addresses,
     addAddress: async (a) => {
       if (!user) return null;
-      const { data } = await supabase.from("addresses").insert({ user_id: user.id, ...addressToRow(a) }).select("*").single();
+      const { data } = await supabase.from("addresses").insert({ user_id: user.id, ...addressToRow(a) } as any).select("*").single();
       if (!data) return null;
       const m = mapAddress(data);
       setAddresses((arr) => [m, ...arr]);

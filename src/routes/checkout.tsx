@@ -37,7 +37,8 @@ export default function CheckoutPage() {
       toast.error(t("select_address"));
       return;
     }
-    const order = placeOrder(method, receipt, selected);
+    const order = await placeOrder(method, receipt, selected);
+    if (!order) { toast.error(lang === "ar" ? "فشل إنشاء الطلب" : "Failed to place order"); return; }
     nav(`/order-confirm/${order.id}`);
   };
 

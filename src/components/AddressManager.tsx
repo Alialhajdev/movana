@@ -117,14 +117,14 @@ export function AddressManager({ selectedId, onSelect }: Props) {
         <AddressForm
           initial={editing}
           onClose={() => { setOpen(false); setEditing(null); }}
-          onSave={(data) => {
+          onSave={async (data) => {
             if (editing) {
-              updateAddress(editing.id, data);
+              await updateAddress(editing.id, data);
               onSelect({ ...editing, ...data });
               toast.success(lang === "ar" ? "تم التحديث" : "Updated");
             } else {
-              const a = addAddress(data);
-              onSelect(a);
+              const a = await addAddress(data);
+              if (a) onSelect(a);
               toast.success(lang === "ar" ? "تمت الإضافة" : "Added");
             }
             setOpen(false); setEditing(null);
