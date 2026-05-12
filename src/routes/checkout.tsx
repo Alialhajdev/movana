@@ -27,7 +27,7 @@ export default function CheckoutPage() {
 
   if (!user) return null;
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (cart.length === 0) {
       toast.error(t("cart_empty"));
@@ -37,7 +37,8 @@ export default function CheckoutPage() {
       toast.error(t("select_address"));
       return;
     }
-    const order = placeOrder(method, receipt, selected);
+    const order = await placeOrder(method, receipt, selected);
+    if (!order) { toast.error(lang === "ar" ? "فشل إنشاء الطلب" : "Failed to place order"); return; }
     nav(`/order-confirm/${order.id}`);
   };
 
