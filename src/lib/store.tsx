@@ -516,7 +516,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         customer_phone: address?.phone ?? null,
         address: address ?? null,
       };
-      const { data, error } = await supabase.from("orders").insert(payload).select("*").single();
+      const { data, error } = await supabase.from("orders").insert(payload as any).select("*").single();
       if (error || !data) return null;
       const ord = mapOrder(data);
       setOrders((o) => [ord, ...o]);
@@ -536,7 +536,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     findSeries,
     byCategory: (c) => series.filter((s) => s.category === c),
     addSeries: async (s) => {
-      const { data, error } = await supabase.from("series").insert(seriesToRow(s)).select("*").single();
+      const { data, error } = await supabase.from("series").insert(seriesToRow(s) as any).select("*").single();
       if (!error && data) setSeries((arr) => [mapSeries(data), ...arr]);
     },
     updateSeries: async (id, patch) => {
@@ -590,7 +590,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     slides,
     addSlide: async (s) => {
       const sort_order = slides.length;
-      const { data } = await supabase.from("slides").insert({ ...slideToRow(s), sort_order }).select("*").single();
+      const { data } = await supabase.from("slides").insert({ ...slideToRow(s), sort_order } as any).select("*").single();
       if (data) setSlides((arr) => [...arr, mapSlide(data)]);
     },
     updateSlide: async (id, patch) => {
@@ -629,7 +629,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     offers,
     addOffer: async (o) => {
       const sort_order = offers.length;
-      const { data } = await supabase.from("offers").insert({ ...offerToRow(o), sort_order }).select("*").single();
+      const { data } = await supabase.from("offers").insert({ ...offerToRow(o), sort_order } as any).select("*").single();
       if (data) setOffers((arr) => [...arr, mapOffer(data)]);
     },
     updateOffer: async (id, patch) => {
