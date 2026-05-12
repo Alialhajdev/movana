@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { Heart, Play, ShoppingCart, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { categoryMeta } from "@/lib/data";
 import { useI18n, formatYER } from "@/lib/i18n";
@@ -86,8 +86,7 @@ export function HeroSlider() {
               {linked ? (
                 <>
                   <Link
-                    to="/series/$id"
-                    params={{ id: linked.id }}
+                    to={`/series/${linked.id}`}
                     className="inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 text-sm font-bold text-black hover:bg-white/90 transition"
                   >
                     <Play className="size-4 fill-current" />

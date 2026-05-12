@@ -1,4 +1,4 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Heart, LogOut, Menu, Search, ShoppingCart, User as UserIcon, X, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
@@ -12,7 +12,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const navigate = useNavigate();
-  const path = useRouterState({ select: (s) => s.location.pathname });
+  const path = useLocation().pathname;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -24,7 +24,7 @@ export function Header() {
   useEffect(() => setOpen(false), [path]);
 
   const links = [
-    { to: "/", label: t("nav_home") },
+    { to: "/", label: t("nav_home"), end: true },
     { to: "/category/korean", label: t("nav_korean") },
     { to: "/category/turkish", label: t("nav_turkish") },
     { to: "/category/english", label: t("nav_english") },
@@ -34,9 +34,7 @@ export function Header() {
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (q.trim()) {
-      navigate({ to: "/search", search: { q: q.trim() } });
-    }
+    if (q.trim()) navigate(`/search?q=${encodeURIComponent(q.trim())}`);
   };
 
   return (
@@ -47,20 +45,20 @@ export function Header() {
       )}
     >
       <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-4 px-4 md:px-10">
-        <Link to="/" className="font-display text-2xl tracking-wider text-primary">
-          MOVANA
-        </Link>
+        <Link to="/" className="font-display text-2xl tracking-wider text-primary">MOVANA</Link>
 
         <nav className="hidden lg:flex items-center gap-5 text-sm">
           {links.map((l) => (
-            <Link
+            <NavLink
               key={l.to}
               to={l.to}
-              className="text-white/80 hover:text-white transition"
-              activeProps={{ className: "text-white font-bold" }}
+              end={l.end}
+              className={({ isActive }) =>
+                cn("transition", isActive ? "text-white font-bold" : "text-white/80 hover:text-white")
+              }
             >
               {l.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
 
@@ -135,9 +133,7 @@ export function Header() {
               />
             </form>
             {links.map((l) => (
-              <Link key={l.to} to={l.to} className="rounded-md px-3 py-2 text-sm hover:bg-white/5">
-                {l.label}
-              </Link>
+              <Link key={l.to} to={l.to} className="rounded-md px-3 py-2 text-sm hover:bg-white/5">{l.label}</Link>
             ))}
             <button onClick={toggle} className="text-start rounded-md px-3 py-2 text-sm hover:bg-white/5">
               {lang === "ar" ? "English" : "العربية"}
@@ -196,7 +192,7 @@ export function MobileBottomNav() {
   const { t } = useI18n();
   const { cartCount } = useStore();
   const items = [
-    { to: "/", icon: <Menu className="size-5" />, label: t("nav_home") },
+    { to: "/", icon: <Menu className="size-5" />, label: t("nav_home"), end: true },
     { to: "/search", icon: <Search className="size-5" />, label: t("nav_search") },
     { to: "/favorites", icon: <Heart className="size-5" />, label: t("nav_favorites") },
     { to: "/cart", icon: <ShoppingCart className="size-5" />, label: t("nav_cart"), badge: cartCount },
@@ -206,18 +202,20 @@ export function MobileBottomNav() {
     <nav className="md:hidden fixed inset-x-0 bottom-0 z-40 glass border-t border-border">
       <div className="grid grid-cols-5">
         {items.map((it) => (
-          <Link
+          <NavLink
             key={it.to}
             to={it.to}
-            className="relative flex flex-col items-center gap-1 py-2 text-[10px] text-muted-foreground"
-            activeProps={{ className: "text-primary" }}
+            end={it.end}
+            className={({ isActive }) =>
+              cn("relative flex flex-col items-center gap-1 py-2 text-[10px]", isActive ? "text-primary" : "text-muted-foreground")
+            }
           >
             {it.icon}
             <span>{it.label}</span>
             {it.badge ? (
               <span className="absolute top-1 end-1/4 grid size-4 place-items-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">{it.badge}</span>
             ) : null}
-          </Link>
+          </NavLink>
         ))}
       </div>
     </nav>
