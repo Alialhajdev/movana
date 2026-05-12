@@ -135,6 +135,51 @@ const defaultSlides = (): Slide[] =>
     order: i,
   }));
 
+const defaultOffers = (): Offer[] => [
+  {
+    id: "offer-1",
+    titleAr: "عرض الافتتاح",
+    titleEn: "Launch Special",
+    descriptionAr: "خصم 30% على جميع المسلسلات الكورية لفترة محدودة",
+    descriptionEn: "30% off all Korean series for a limited time",
+    badgeAr: "الأكثر طلباً",
+    badgeEn: "Most popular",
+    discountPct: 30,
+    gradient: "from-rose-700 via-red-900 to-zinc-950",
+    ctaUrl: "/category/korean",
+    active: true,
+    order: 0,
+  },
+  {
+    id: "offer-2",
+    titleAr: "باقة العائلة",
+    titleEn: "Family Bundle",
+    descriptionAr: "اطلب 3 مسلسلات بسعر اثنين فقط",
+    descriptionEn: "Get 3 series for the price of 2",
+    badgeAr: "وفر أكثر",
+    badgeEn: "Save more",
+    discountPct: 33,
+    gradient: "from-amber-700 via-rose-900 to-zinc-950",
+    ctaUrl: "/category/turkish",
+    active: true,
+    order: 1,
+  },
+  {
+    id: "offer-3",
+    titleAr: "تخفيضات نهاية الأسبوع",
+    titleEn: "Weekend Deals",
+    descriptionAr: "خصم 20% على المسلسلات الأجنبية حتى الأحد",
+    descriptionEn: "20% off international series until Sunday",
+    badgeAr: "وقت محدود",
+    badgeEn: "Limited time",
+    discountPct: 20,
+    gradient: "from-violet-700 via-fuchsia-900 to-zinc-950",
+    ctaUrl: "/category/english",
+    active: true,
+    order: 2,
+  },
+];
+
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -143,6 +188,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [series, setSeries] = useState<Series[]>(seedSeries);
   const [requests, setRequests] = useState<SeriesRequest[]>([]);
   const [slides, setSlides] = useState<Slide[]>(defaultSlides());
+  const [offers, setOffers] = useState<Offer[]>(defaultOffers());
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -153,6 +199,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setSeries(read<Series[]>("movana_series", seedSeries));
     setRequests(read<SeriesRequest[]>("movana_requests", []));
     setSlides(read<Slide[]>("movana_slides", defaultSlides()));
+    setOffers(read<Offer[]>("movana_offers", defaultOffers()));
     setHydrated(true);
   }, []);
 
