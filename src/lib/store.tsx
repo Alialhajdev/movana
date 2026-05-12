@@ -210,6 +210,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => { if (hydrated) localStorage.setItem("movana_series", JSON.stringify(series)); }, [series, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("movana_requests", JSON.stringify(requests)); }, [requests, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("movana_slides", JSON.stringify(slides)); }, [slides, hydrated]);
+  useEffect(() => { if (hydrated) localStorage.setItem("movana_offers", JSON.stringify(offers)); }, [offers, hydrated]);
 
   const findSeries = (id: string) => series.find((s) => s.id === id);
 
@@ -295,6 +296,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setSlides((arr) => {
         const sorted = [...arr].sort((a, b) => a.order - b.order);
         const idx = sorted.findIndex((s) => s.id === id);
+        const swap = idx + dir;
+        if (idx < 0 || swap < 0 || swap >= sorted.length) return arr;
+        const a = sorted[idx], b = sorted[swap];
+        const ao = a.order; a.order = b.order; b.order = ao;
+        return [...sorted];
+      }),
+    offers,
+    addOffer: (o) =>
+      setOffers((arr) => [...arr, { id: `offer-${Date.now().toString(36)}`, order: arr.length, ...o }]),
+    updateOffer: (id, patch) =>
+      setOffers((arr) => arr.map((o) => (o.id === id ? { ...o, ...patch } : o))),
+    deleteOffer: (id) => setOffers((arr) => arr.filter((o) => o.id !== id)),
+    reorderOffer: (id, dir) =>
+      setOffers((arr) => {
+        const sorted = [...arr].sort((a, b) => a.order - b.order);
+        const idx = sorted.findIndex((o) => o.id === id);
         const swap = idx + dir;
         if (idx < 0 || swap < 0 || swap >= sorted.length) return arr;
         const a = sorted[idx], b = sorted[swap];
