@@ -27,7 +27,7 @@ export default function CheckoutPage() {
 
   if (!user) return null;
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (cart.length === 0) {
       toast.error(t("cart_empty"));

@@ -3,20 +3,29 @@ import { useState } from "react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const { t, lang } = useI18n();
-  const { login } = useStore();
+  const { signIn } = useStore();
   const nav = useNavigate();
   const [sp] = useSearchParams();
   const next = sp.get("next") || "/";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
-    login(email);
+    setBusy(true);
+    const { error } = await signIn(email, password);
+    setBusy(false);
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    toast.success(lang === "ar" ? "أهلاً بعودتك" : "Welcome back");
     nav(next);
   };
 
@@ -30,12 +39,14 @@ export default function LoginPage() {
           <form onSubmit={submit} className="mt-6 space-y-4">
             <Field label={t("email")} type="email" value={email} onChange={setEmail} required />
             <Field label={t("password")} type="password" value={password} onChange={setPassword} required />
-            <button className="w-full rounded-md gradient-red py-3 font-bold shadow-glow">{t("nav_login")}</button>
+            <button disabled={busy} className="w-full rounded-md gradient-red py-3 font-bold shadow-glow disabled:opacity-60">
+              {busy ? "…" : t("nav_login")}
+            </button>
             <div className="text-center text-xs text-muted-foreground">
               {t("no_account")} <Link to="/register" className="text-primary font-bold">{t("nav_register")}</Link>
             </div>
             <p className="text-center text-[10px] text-muted-foreground">
-              {lang === "ar" ? "تلميح: استخدم بريداً يبدأ بـ admin@ للوصول للوحة الإدارة" : "Tip: emails starting with admin@ get admin access"}
+              {lang === "ar" ? "أول حساب يتم تسجيله يصبح المسؤول تلقائياً" : "The first registered account automatically becomes admin"}
             </p>
           </form>
         </div>
