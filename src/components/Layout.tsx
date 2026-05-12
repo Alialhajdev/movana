@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 export function Header() {
   const { t, lang, toggle } = useI18n();
-  const { user, cartCount, logout } = useStore();
+  const { user, cartCount, logout, settings } = useStore();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -45,7 +45,10 @@ export function Header() {
       )}
     >
       <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-4 px-4 md:px-10">
-        <Link to="/" className="font-display text-2xl tracking-wider text-primary">MOVANA</Link>
+        <Link to="/" className="flex items-center gap-2 font-display text-2xl tracking-wider text-primary">
+          {settings.logoUrl && <img src={settings.logoUrl} alt={settings.logoText} className="h-8 w-auto object-contain" />}
+          <span>{settings.logoText}</span>
+        </Link>
 
         <nav className="hidden lg:flex items-center gap-5 text-sm">
           {links.map((l) => (
@@ -156,11 +159,15 @@ export function Header() {
 
 export function Footer() {
   const { t } = useI18n();
+  const { settings } = useStore();
   return (
     <footer className="mt-20 border-t border-border bg-background/80">
       <div className="mx-auto grid max-w-[1600px] gap-8 px-4 md:px-10 py-12 md:grid-cols-4">
         <div>
-          <div className="font-display text-2xl text-primary">MOVANA</div>
+          <div className="flex items-center gap-2 font-display text-2xl text-primary">
+            {settings.logoUrl && <img src={settings.logoUrl} alt={settings.logoText} className="h-8 w-auto object-contain" />}
+            <span>{settings.logoText}</span>
+          </div>
           <p className="mt-3 text-sm text-muted-foreground">{t("footer_about")}</p>
         </div>
         <div>

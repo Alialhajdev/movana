@@ -1,24 +1,31 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Upload, Wallet, Truck, CreditCard } from "lucide-react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { Steps } from "./cart";
+import { AddressManager } from "@/components/AddressManager";
 import { formatYER, useI18n } from "@/lib/i18n";
-import { useStore, type Order } from "@/lib/store";
+import { useStore, type Order, type Address } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export default function CheckoutPage() {
   const { t, lang } = useI18n();
-  const { cart, cartTotal, user, placeOrder, findSeries } = useStore();
+  const { cart, cartTotal, user, placeOrder, findSeries, addresses } = useStore();
   const nav = useNavigate();
   const [method, setMethod] = useState<Order["paymentMethod"]>("wallet_transfer");
   const [receipt, setReceipt] = useState<string>();
+  const [selected, setSelected] = useState<Address | null>(null);
 
-  if (!user) {
-    if (typeof window !== "undefined") nav("/login?next=/checkout");
-    return null;
-  }
+  useEffect(() => {
+    if (!user) nav("/login?next=/checkout");
+  }, [user, nav]);
+
+  useEffect(() => {
+    if (!selected && addresses.length > 0) setSelected(addresses[0]);
+  }, [addresses, selected]);
+
+  if (!user) return null;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +33,11 @@ export default function CheckoutPage() {
       toast.error(t("cart_empty"));
       return;
     }
-    const order = placeOrder(method, receipt);
+    if (!selected) {
+      toast.error(t("select_address"));
+      return;
+    }
+    const order = placeOrder(method, receipt, selected);
     nav(`/order-confirm/${order.id}`);
   };
 
@@ -45,6 +56,8 @@ export default function CheckoutPage() {
 
         <form onSubmit={submit} className="grid lg:grid-cols-[1fr_320px] gap-6">
           <div className="space-y-6">
+            <AddressManager selectedId={selected?.id} onSelect={setSelected} />
+
             <div className="glass rounded-2xl p-5">
               <h3 className="font-bold mb-4">{t("pay_method")}</h3>
               <div className="grid sm:grid-cols-3 gap-3">
@@ -92,6 +105,15 @@ export default function CheckoutPage() {
                 </div>
               );
             })}
+            {selected && (
+              <div className="rounded-lg bg-input/60 p-3 text-xs space-y-1">
+                <div className="font-bold">{t("address")}: {selected.label}</div>
+                <div className="text-muted-foreground">{selected.fullName} · {selected.phone}</div>
+                <div className="text-muted-foreground line-clamp-2">
+                  {selected.city}{selected.district ? ` - ${selected.district}` : ""}
+                </div>
+              </div>
+            )}
             <div className="border-t border-border pt-3 flex justify-between text-lg font-bold">
               <span>{t("cart_total")}</span>
               <span className="text-primary">{formatYER(cartTotal, lang)}</span>

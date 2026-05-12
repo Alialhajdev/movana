@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Film, ImageIcon, MessageSquare, ShoppingBag, Sparkles, Users, Wallet } from "lucide-react";
+import { BarChart3, Film, ImageIcon, MessageSquare, Settings as SettingsIcon, ShoppingBag, Sparkles, Users, Wallet } from "lucide-react";
 import { Header, Footer } from "@/components/Layout";
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
@@ -11,8 +11,9 @@ import { PaymentsManager } from "@/components/admin/PaymentsManager";
 import { RequestsManager } from "@/components/admin/RequestsManager";
 import { SlidesManager } from "@/components/admin/SlidesManager";
 import { OffersManager } from "@/components/admin/OffersManager";
+import { SettingsManager } from "@/components/admin/SettingsManager";
 
-type Tab = "dashboard" | "series" | "offers" | "orders" | "payments" | "requests" | "slides";
+type Tab = "dashboard" | "series" | "offers" | "orders" | "payments" | "requests" | "slides" | "settings";
 
 export default function AdminPage() {
   const { t, lang } = useI18n();
@@ -48,6 +49,7 @@ export default function AdminPage() {
     { id: "payments", label: t("admin_payments"), icon: <Wallet className="size-4" />, badge: stats.pendingPayments },
     { id: "requests", label: t("admin_requests"), icon: <MessageSquare className="size-4" />, badge: stats.openRequests },
     { id: "slides", label: t("admin_slides"), icon: <ImageIcon className="size-4" /> },
+    { id: "settings", label: t("admin_settings"), icon: <SettingsIcon className="size-4" /> },
   ];
 
   return (
@@ -102,6 +104,7 @@ export default function AdminPage() {
             {tab === "payments" && <PaymentsManager />}
             {tab === "requests" && <RequestsManager />}
             {tab === "slides" && <SlidesManager />}
+            {tab === "settings" && <SettingsManager />}
           </section>
         </div>
       </main>
