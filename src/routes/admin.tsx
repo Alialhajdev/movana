@@ -1,6 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Film, ImageIcon, MessageSquare, ShoppingBag, Users, Wallet } from "lucide-react";
+import { BarChart3, Film, ImageIcon, MessageSquare, ShoppingBag, Sparkles, Users, Wallet } from "lucide-react";
 import { Header, Footer } from "@/components/Layout";
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
@@ -10,21 +10,18 @@ import { OrdersManager } from "@/components/admin/OrdersManager";
 import { PaymentsManager } from "@/components/admin/PaymentsManager";
 import { RequestsManager } from "@/components/admin/RequestsManager";
 import { SlidesManager } from "@/components/admin/SlidesManager";
+import { OffersManager } from "@/components/admin/OffersManager";
 
-export const Route = createFileRoute("/admin")({ component: AdminPage });
+type Tab = "dashboard" | "series" | "offers" | "orders" | "payments" | "requests" | "slides";
 
-type Tab = "dashboard" | "series" | "orders" | "payments" | "requests" | "slides";
-
-function AdminPage() {
+export default function AdminPage() {
   const { t, lang } = useI18n();
-  const { user, orders, series, requests } = useStore();
+  const { user, orders, series, requests, offers } = useStore();
   const nav = useNavigate();
   const [tab, setTab] = useState<Tab>("dashboard");
 
   useEffect(() => {
-    if (typeof window !== "undefined" && (!user || !user.isAdmin)) {
-      nav({ to: "/login", search: { next: "/admin" } });
-    }
+    if (!user || !user.isAdmin) nav("/login?next=/admin");
   }, [user, nav]);
 
   const stats = useMemo(() => {
@@ -37,14 +34,16 @@ function AdminPage() {
       revenue,
       pendingPayments: orders.filter((o) => o.paymentMethod === "wallet_transfer" && o.status === "pending").length,
       openRequests: requests.filter((r) => r.status === "open").length,
+      activeOffers: offers.filter((o) => o.active).length,
     };
-  }, [orders, series, requests]);
+  }, [orders, series, requests, offers]);
 
   if (!user || !user.isAdmin) return null;
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode; badge?: number }[] = [
     { id: "dashboard", label: t("admin_dashboard"), icon: <BarChart3 className="size-4" /> },
     { id: "series", label: t("admin_series"), icon: <Film className="size-4" /> },
+    { id: "offers", label: t("admin_offers"), icon: <Sparkles className="size-4" />, badge: stats.activeOffers },
     { id: "orders", label: t("admin_orders"), icon: <ShoppingBag className="size-4" />, badge: orders.length },
     { id: "payments", label: t("admin_payments"), icon: <Wallet className="size-4" />, badge: stats.pendingPayments },
     { id: "requests", label: t("admin_requests"), icon: <MessageSquare className="size-4" />, badge: stats.openRequests },
@@ -98,6 +97,7 @@ function AdminPage() {
               </div>
             )}
             {tab === "series" && <SeriesManager />}
+            {tab === "offers" && <OffersManager />}
             {tab === "orders" && <OrdersManager />}
             {tab === "payments" && <PaymentsManager />}
             {tab === "requests" && <RequestsManager />}
