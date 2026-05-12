@@ -1,21 +1,16 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
-
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
-export const Route = createFileRoute("/profile")({
-  component: ProfilePage,
-});
-
-function ProfilePage() {
+export default function ProfilePage() {
   const { t, lang } = useI18n();
   const { user, orders, favorites, findSeries } = useStore();
   const nav = useNavigate();
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !user) nav({ to: "/login", search: { next: "/profile" } });
+    if (!user) nav("/login?next=/profile");
   }, [user, nav]);
 
   if (!user) return null;
@@ -30,9 +25,7 @@ function ProfilePage() {
       <Header />
       <main className="pt-24 pb-24 md:pb-12 mx-auto max-w-5xl px-4 md:px-10">
         <div className="glass rounded-2xl p-6 flex items-center gap-4">
-          <div className="grid size-16 place-items-center rounded-full gradient-red text-2xl font-bold">
-            {user.name[0]?.toUpperCase()}
-          </div>
+          <div className="grid size-16 place-items-center rounded-full gradient-red text-2xl font-bold">{user.name[0]?.toUpperCase()}</div>
           <div>
             <h1 className="font-display text-3xl">{user.name}</h1>
             <p className="text-sm text-muted-foreground">{user.email}</p>
@@ -41,9 +34,7 @@ function ProfilePage() {
 
         <h2 className="font-display text-2xl mt-10 mb-4">{t("nav_orders")}</h2>
         {orders.length === 0 ? (
-          <div className="glass rounded-2xl p-10 text-center text-muted-foreground">
-            {lang === "ar" ? "لا توجد طلبات بعد" : "No orders yet"}
-          </div>
+          <div className="glass rounded-2xl p-10 text-center text-muted-foreground">{lang === "ar" ? "لا توجد طلبات بعد" : "No orders yet"}</div>
         ) : (
           <div className="space-y-3">
             {orders.map((o) => (
@@ -54,9 +45,7 @@ function ProfilePage() {
                     <div className="text-xs text-muted-foreground">{new Date(o.createdAt).toLocaleString(lang === "ar" ? "ar-YE" : "en-US")}</div>
                   </div>
                   <div className="text-primary font-bold">{formatYER(o.total, lang)}</div>
-                  <span className={`rounded-full px-3 py-1 text-xs font-bold ${statusClass(o.status)}`}>
-                    {t(`status_${o.status}` as "status_pending")}
-                  </span>
+                  <span className={`rounded-full px-3 py-1 text-xs font-bold ${statusClass(o.status)}`}>{t(`status_${o.status}` as "status_pending")}</span>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
                   {o.items.map((i) => {
