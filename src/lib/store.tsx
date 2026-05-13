@@ -422,6 +422,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [settings, setSettings] = useState<Settings>(defaultSettings);
+  const [wallets, setWallets] = useState<Wallet[]>([]);
 
   // Persist guest cart + favorites
   useEffect(() => { localStorage.setItem("movana_cart", JSON.stringify(cart)); }, [cart]);
