@@ -585,6 +585,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (patch.episodes !== undefined) row.episodes = r.episodes;
       if (patch.source !== undefined) row.source = r.source;
       if (patch.posterColor !== undefined) row.poster_color = r.poster_color;
+      if (patch.posterImage !== undefined) row.poster_image = r.poster_image;
+      if (patch.backgroundImage !== undefined) row.background_image = r.background_image;
+      if (patch.relatedIds !== undefined) row.related_ids = r.related_ids;
       if (patch.trailerUrl !== undefined) row.trailer_url = r.trailer_url;
       if (patch.price !== undefined) row.price = r.price;
       if (patch.trending !== undefined) row.trending = r.trending;
