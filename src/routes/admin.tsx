@@ -12,8 +12,9 @@ import { RequestsManager } from "@/components/admin/RequestsManager";
 import { SlidesManager } from "@/components/admin/SlidesManager";
 import { OffersManager } from "@/components/admin/OffersManager";
 import { SettingsManager } from "@/components/admin/SettingsManager";
+import { ReviewsManager } from "@/components/admin/ReviewsManager";
 
-type Tab = "dashboard" | "series" | "offers" | "orders" | "payments" | "requests" | "slides" | "settings";
+type Tab = "dashboard" | "series" | "offers" | "orders" | "payments" | "requests" | "reviews" | "slides" | "settings";
 
 export default function AdminPage() {
   const { t, lang } = useI18n();
