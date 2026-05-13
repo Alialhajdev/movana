@@ -6,7 +6,7 @@ import { useStore } from "@/lib/store";
 
 export default function ProfilePage() {
   const { t, lang } = useI18n();
-  const { user, orders, favorites, findSeries } = useStore();
+  const { user, orders, favorites, findSeries, requests } = useStore();
   const nav = useNavigate();
 
   useEffect(() => {
