@@ -166,12 +166,15 @@ const mapSeries = (r: any): Series => ({
   episodes: r.episodes,
   source: r.source,
   posterColor: r.poster_color,
+  posterImage: r.poster_image ?? undefined,
+  backgroundImage: r.background_image ?? undefined,
   trailerUrl: r.trailer_url ?? "",
   price: Number(r.price),
   trending: r.trending,
   isNew: r.is_new,
   topWatched: r.top_watched,
   featured: r.featured,
+  relatedIds: Array.isArray(r.related_ids) ? r.related_ids : [],
 });
 
 const seriesToRow = (s: Partial<Series> & { id?: string }) => ({
@@ -189,12 +192,15 @@ const seriesToRow = (s: Partial<Series> & { id?: string }) => ({
   episodes: s.episodes ?? 1,
   source: s.source ?? "Original",
   poster_color: s.posterColor ?? "from-rose-700 via-red-900 to-zinc-950",
+  poster_image: s.posterImage ?? null,
+  background_image: s.backgroundImage ?? null,
   trailer_url: s.trailerUrl ?? "",
   price: s.price ?? 0,
   trending: !!s.trending,
   is_new: !!s.isNew,
   top_watched: !!s.topWatched,
   featured: !!s.featured,
+  related_ids: s.relatedIds ?? [],
 });
 
 const mapOffer = (r: any): Offer => ({
