@@ -108,6 +108,8 @@ export default function AdminPage() {
             {tab === "offers" && <OffersManager />}
             {tab === "orders" && <OrdersManager />}
             {tab === "payments" && <PaymentsManager />}
+            {tab === "wallets" && <WalletsManager />}
+            {tab === "users" && <UsersManager />}
             {tab === "requests" && <RequestsManager />}
             {tab === "reviews" && <ReviewsManager />}
             {tab === "slides" && <SlidesManager />}
