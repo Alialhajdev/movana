@@ -732,6 +732,27 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         theme_mode: merged.themeMode,
       }).eq("id", 1);
     },
+
+    reviews,
+    fetchReviews: async (seriesId) => {
+      const { data } = await supabase.from("reviews").select("*").eq("series_id", seriesId).order("created_at", { ascending: false });
+      const list = (data ?? []).map(mapReview);
+      setReviews((prev) => [...prev.filter((r) => r.seriesId !== seriesId), ...list]);
+      return list;
+    },
+    addReview: async (seriesId, rating, comment) => {
+      if (!user) return { error: "not_authenticated" };
+      const { data, error } = await supabase.from("reviews").insert({
+        series_id: seriesId, user_id: user.id, user_name: user.name, rating, comment,
+      } as any).select("*").single();
+      if (error || !data) return { error: error?.message ?? "failed" };
+      setReviews((prev) => [mapReview(data), ...prev]);
+      return { error: null };
+    },
+    deleteReview: async (id) => {
+      await supabase.from("reviews").delete().eq("id", id);
+      setReviews((prev) => prev.filter((r) => r.id !== id));
+    },
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
