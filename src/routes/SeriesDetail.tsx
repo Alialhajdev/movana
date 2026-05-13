@@ -1,23 +1,48 @@
 import { Link, useParams } from "react-router-dom";
-import { useMemo } from "react";
-import { Heart, Play, Share2, ShoppingCart, Star } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Heart, Play, Share2, ShoppingCart, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { SeriesRow } from "@/components/SeriesRow";
 import { categoryMeta } from "@/lib/data";
 import { formatYER, useI18n } from "@/lib/i18n";
-import { useStore } from "@/lib/store";
+import { useStore, type Review } from "@/lib/store";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 export default function SeriesDetail() {
   const { id = "" } = useParams<{ id: string }>();
   const { t, lang } = useI18n();
-  const { addToCart, toggleFavorite, isFavorite, findSeries, series: allSeries } = useStore();
+  const {
+    addToCart, toggleFavorite, isFavorite, findSeries, series: allSeries,
+    user, fetchReviews, addReview, deleteReview,
+  } = useStore();
   const s = findSeries(id);
-  const related = useMemo(
-    () => (s ? allSeries.filter((x) => x.category === s.category && x.id !== s.id) : []),
-    [s, allSeries]
-  );
+  const [items, setItems] = useState<Review[]>([]);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  // Scroll to top whenever the series changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [id]);
+
+  // Load reviews
+  useEffect(() => {
+    if (!id) return;
+    fetchReviews(id).then(setItems);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const related = useMemo(() => {
+    if (!s) return [];
+    if (s.relatedIds && s.relatedIds.length) {
+      return s.relatedIds.map((rid) => allSeries.find((x) => x.id === rid)).filter(Boolean) as typeof allSeries;
+    }
+    return allSeries.filter((x) => x.category === s.category && x.id !== s.id);
+  }, [s, allSeries]);
+
   if (!s) {
     return (
       <>
@@ -39,12 +64,36 @@ export default function SeriesDetail() {
     }
   };
 
+  const submitReview = async () => {
+    if (!user) { toast.error(lang === "ar" ? "سجّل الدخول لإضافة مراجعة" : "Sign in to add a review"); return; }
+    if (!comment.trim()) { toast.error(lang === "ar" ? "اكتب تعليقاً" : "Write a comment"); return; }
+    setBusy(true);
+    const { error } = await addReview(s.id, rating, comment.trim());
+    setBusy(false);
+    if (error) { toast.error(error); return; }
+    setComment(""); setRating(5);
+    const list = await fetchReviews(s.id);
+    setItems(list);
+    toast.success(lang === "ar" ? "تمت إضافة مراجعتك" : "Review added");
+  };
+
+  const removeReview = async (rid: string) => {
+    await deleteReview(rid);
+    setItems((arr) => arr.filter((r) => r.id !== rid));
+  };
+
+  const avg = items.length ? items.reduce((a, b) => a + b.rating, 0) / items.length : 0;
+
   return (
     <>
       <Header />
       <main className="pb-24 md:pb-12">
         <section className="relative h-[80vh] min-h-[560px] w-full overflow-hidden">
-          <div className={cn("absolute inset-0 bg-gradient-to-br animate-ken-burns", s.posterColor)} />
+          {s.backgroundImage ? (
+            <img src={s.backgroundImage} alt="" className="absolute inset-0 size-full object-cover" />
+          ) : (
+            <div className={cn("absolute inset-0 bg-gradient-to-br animate-ken-burns", s.posterColor)} />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
           <div className="relative z-10 mx-auto flex h-full max-w-[1600px] items-end px-4 md:px-10 pb-12">
             <div className="max-w-3xl">
@@ -90,29 +139,55 @@ export default function SeriesDetail() {
         </section>
 
         <section className="mx-auto max-w-[1600px] px-4 md:px-10 mt-12">
-          <h2 className="font-display text-3xl mb-4">{t("screenshots")}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[0, 1, 2, 3].map((i) => (
-              <div key={i} className={cn("aspect-video rounded-lg bg-gradient-to-br shadow-card overflow-hidden cursor-pointer transition hover:scale-105", s.posterColor)} />
-            ))}
+          <div className="flex items-end justify-between gap-3 flex-wrap">
+            <h2 className="font-display text-3xl">{t("reviews")}</h2>
+            {items.length > 0 && (
+              <span className="text-sm text-muted-foreground">
+                {avg.toFixed(1)} <Star className="inline size-3.5 fill-[var(--gold)] text-[var(--gold)]" /> · {items.length}
+              </span>
+            )}
           </div>
-        </section>
-
-        <section className="mx-auto max-w-[1600px] px-4 md:px-10 mt-12">
-          <h2 className="font-display text-3xl">{t("reviews")}</h2>
           <div className="mt-4 glass rounded-2xl p-6 space-y-4">
-            {[
-              { name: "أحمد", text: lang === "ar" ? "إخراج رائع وقصة لا تُنسى!" : "Brilliant direction and unforgettable story!", r: 5 },
-              { name: "Sara", text: lang === "ar" ? "من أفضل ما شاهدت هذا العام." : "One of the best things I watched this year.", r: 4 },
-            ].map((rev, i) => (
-              <div key={i} className="border-b border-border last:border-0 pb-4 last:pb-0">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold">{rev.name}</span>
-                  <span className="flex text-[var(--gold)]">
-                    {Array.from({ length: rev.r }).map((_, idx) => <Star key={idx} className="size-4 fill-current" />)}
-                  </span>
+            {/* Add review form */}
+            {user ? (
+              <div className="border-b border-border pb-4">
+                <p className="text-sm font-medium mb-2">{t("write_review")}</p>
+                <div className="flex items-center gap-1 mb-2">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button key={n} type="button" onClick={() => setRating(n)} className="p-1">
+                      <Star className={cn("size-5", n <= rating ? "fill-[var(--gold)] text-[var(--gold)]" : "text-muted-foreground")} />
+                    </button>
+                  ))}
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">{rev.text}</p>
+                <Textarea rows={3} placeholder={lang === "ar" ? "شاركنا رأيك..." : "Share your thoughts..."} value={comment} onChange={(e) => setComment(e.target.value)} />
+                <Button onClick={submitReview} disabled={busy} className="gradient-red text-primary-foreground mt-2">
+                  {t("send")}
+                </Button>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground border-b border-border pb-4">
+                {lang === "ar" ? "سجّل الدخول لكتابة مراجعة" : "Sign in to write a review"} · <Link to="/login" className="text-primary">{t("nav_login")}</Link>
+              </p>
+            )}
+
+            {items.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">{lang === "ar" ? "لا توجد مراجعات بعد" : "No reviews yet"}</p>
+            ) : items.map((rev) => (
+              <div key={rev.id} className="border-b border-border last:border-0 pb-4 last:pb-0">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold">{rev.userName || (lang === "ar" ? "مستخدم" : "User")}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="flex text-[var(--gold)]">
+                      {Array.from({ length: rev.rating }).map((_, idx) => <Star key={idx} className="size-4 fill-current" />)}
+                    </span>
+                    {user && (user.id === rev.userId || user.isAdmin) && (
+                      <button onClick={() => removeReview(rev.id)} className="text-muted-foreground hover:text-destructive">
+                        <Trash2 className="size-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">{rev.comment}</p>
               </div>
             ))}
           </div>
