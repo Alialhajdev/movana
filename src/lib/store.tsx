@@ -171,6 +171,13 @@ interface Store {
   fetchReviews: (seriesId: string) => Promise<Review[]>;
   addReview: (seriesId: string, rating: number, comment: string) => Promise<{ error: string | null }>;
   deleteReview: (id: string) => Promise<void>;
+  wallets: Wallet[];
+  addWallet: (w: Omit<Wallet, "id" | "order">) => Promise<void>;
+  updateWallet: (id: string, patch: Partial<Wallet>) => Promise<void>;
+  deleteWallet: (id: string) => Promise<void>;
+  listAdminUsers: () => Promise<AdminUser[]>;
+  deleteAdminUser: (id: string) => Promise<{ error: string | null }>;
+  resetAdminUserPassword: (email: string) => Promise<{ error: string | null; link?: string | null }>;
 }
 
 const Ctx = createContext<Store | null>(null);
