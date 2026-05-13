@@ -49,6 +49,7 @@ export default function AdminPage() {
     { id: "orders", label: t("admin_orders"), icon: <ShoppingBag className="size-4" />, badge: orders.length },
     { id: "payments", label: t("admin_payments"), icon: <Wallet className="size-4" />, badge: stats.pendingPayments },
     { id: "requests", label: t("admin_requests"), icon: <MessageSquare className="size-4" />, badge: stats.openRequests },
+    { id: "reviews", label: lang === "ar" ? "المراجعات" : "Reviews", icon: <MessageSquare className="size-4" /> },
     { id: "slides", label: t("admin_slides"), icon: <ImageIcon className="size-4" /> },
     { id: "settings", label: t("admin_settings"), icon: <SettingsIcon className="size-4" /> },
   ];
