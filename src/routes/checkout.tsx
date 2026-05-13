@@ -81,9 +81,28 @@ export default function CheckoutPage() {
             {(method === "wallet_transfer" || method === "wallet") && (
               <div className="glass rounded-2xl p-5 space-y-4">
                 <h3 className="font-bold">{t("pay_account")}</h3>
-                <div className="rounded-lg bg-input p-4 font-mono text-lg tracking-wider">Movana Wallet · 0773 123 456</div>
+                {wallets.filter((w) => w.active).length === 0 ? (
+                  <div className="rounded-lg bg-input p-4 text-sm text-muted-foreground">
+                    {lang === "ar" ? "لا توجد محافظ متاحة حالياً." : "No wallets available."}
+                  </div>
+                ) : (
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {wallets.filter((w) => w.active).map((w) => (
+                      <div key={w.id} className="rounded-lg bg-input p-4 flex items-center gap-3">
+                        <div className="text-3xl">{w.icon || "💳"}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs text-muted-foreground">{w.name}</div>
+                          <div className="font-mono text-base tracking-wider truncate">{w.number}</div>
+                        </div>
+                        <button type="button" onClick={() => { navigator.clipboard?.writeText(w.number); toast.success(lang === "ar" ? "تم النسخ" : "Copied"); }} className="rounded-md bg-secondary hover:bg-white/10 px-3 py-1.5 text-xs">
+                          {lang === "ar" ? "نسخ" : "Copy"}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <p className="text-xs text-muted-foreground">
-                  {lang === "ar" ? "حول المبلغ إلى الرقم أعلاه ثم ارفع لقطة شاشة لإيصال التحويل." : "Transfer the amount to the number above and upload a screenshot of the receipt."}
+                  {lang === "ar" ? "حول المبلغ إلى إحدى المحافظ أعلاه ثم ارفع لقطة شاشة لإيصال التحويل." : "Transfer the amount to one of the wallets above and upload a screenshot of the receipt."}
                 </p>
                 <label className="flex items-center gap-3 rounded-lg border-2 border-dashed border-border p-4 cursor-pointer hover:border-primary transition">
                   <Upload className="size-5 text-primary" />
