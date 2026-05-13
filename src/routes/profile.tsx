@@ -58,7 +58,30 @@ export default function ProfilePage() {
           </div>
         )}
 
-        <h2 className="font-display text-2xl mt-10 mb-4">{t("nav_favorites")}</h2>
+        <h2 className="font-display text-2xl mt-10 mb-4">{t("nav_requests")}</h2>
+        {requests.length === 0 ? (
+          <div className="glass rounded-2xl p-6 text-center text-sm text-muted-foreground">
+            {lang === "ar" ? "لم تطلب أي مسلسل بعد" : "You haven't requested any series yet"} · <Link to="/requests" className="text-primary">{t("nav_requests")}</Link>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {requests.map((r) => (
+              <div key={r.id} className="glass rounded-xl p-4 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <div className="font-medium">{r.title}</div>
+                  {r.details && <div className="text-xs text-muted-foreground mt-1">{r.details}</div>}
+                  <div className="text-xs text-muted-foreground mt-1">{new Date(r.createdAt).toLocaleString(lang === "ar" ? "ar-YE" : "en-US")}</div>
+                </div>
+                <span className={`rounded-full px-3 py-1 text-xs font-bold ${
+                  r.status === "approved" ? "text-emerald-400 bg-emerald-500/10"
+                  : r.status === "rejected" ? "text-destructive bg-destructive/10"
+                  : "text-[var(--gold)] bg-[var(--gold)]/10"
+                }`}>{t(`status_${r.status}` as "status_open")}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {favorites.length === 0 ? (
           <div className="glass rounded-2xl p-6 text-center text-sm text-muted-foreground">
             {lang === "ar" ? "لا توجد مفضلات" : "No favorites yet"} · <Link to="/favorites" className="text-primary">{t("view_more")}</Link>
