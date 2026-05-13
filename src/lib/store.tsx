@@ -394,6 +394,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [slides, setSlides] = useState<Slide[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [settings, setSettings] = useState<Settings>(defaultSettings);
 
   // Persist guest cart + favorites
