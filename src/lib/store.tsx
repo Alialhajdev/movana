@@ -92,6 +92,25 @@ export interface Settings {
   themeMode: ThemeMode;
 }
 
+export interface Wallet {
+  id: string;
+  name: string;
+  number: string;
+  icon?: string;
+  active: boolean;
+  order: number;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string | null;
+  name: string | null;
+  created_at: string;
+  last_sign_in_at: string | null;
+  email_confirmed_at: string | null;
+  roles: string[];
+}
+
 export interface Review {
   id: string;
   seriesId: string;
