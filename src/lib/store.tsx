@@ -324,6 +324,16 @@ const mapRequest = (r: any): SeriesRequest => ({
   userEmail: r.user_email ?? undefined,
 });
 
+const mapReview = (r: any): Review => ({
+  id: r.id,
+  seriesId: r.series_id,
+  userId: r.user_id,
+  userName: r.user_name ?? "",
+  rating: Number(r.rating),
+  comment: r.comment ?? "",
+  createdAt: new Date(r.created_at).getTime(),
+});
+
 const mapSettings = (r: any): Settings => ({
   logoText: r.logo_text ?? "MOVANA",
   logoUrl: r.logo_url ?? undefined,
