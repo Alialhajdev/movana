@@ -101,6 +101,8 @@ export interface Review {
   comment: string;
   createdAt: number;
 }
+
+interface Store {
   user: User | null;
   authLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
