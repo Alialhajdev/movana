@@ -82,6 +82,7 @@ export default function ProfilePage() {
           </div>
         )}
 
+        <h2 className="font-display text-2xl mt-10 mb-4">{t("nav_favorites")}</h2>
         {favorites.length === 0 ? (
           <div className="glass rounded-2xl p-6 text-center text-sm text-muted-foreground">
             {lang === "ar" ? "لا توجد مفضلات" : "No favorites yet"} · <Link to="/favorites" className="text-primary">{t("view_more")}</Link>
