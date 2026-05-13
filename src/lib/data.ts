@@ -12,13 +12,16 @@ export interface Series {
   seasons: number;
   episodes: number;
   source: string;
-  posterColor: string; // gradient seed
+  posterColor: string; // gradient seed (fallback)
+  posterImage?: string;
+  backgroundImage?: string;
   trailerUrl: string;
   price: number; // YER
   trending?: boolean;
   isNew?: boolean;
   topWatched?: boolean;
   featured?: boolean;
+  relatedIds?: string[];
 }
 
 const g = (ar: string, en: string) => ({ ar, en });

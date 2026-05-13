@@ -92,6 +92,16 @@ export interface Settings {
   themeMode: ThemeMode;
 }
 
+export interface Review {
+  id: string;
+  seriesId: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  createdAt: number;
+}
+
 interface Store {
   user: User | null;
   authLoading: boolean;
@@ -138,6 +148,10 @@ interface Store {
   deleteAddress: (id: string) => Promise<void>;
   settings: Settings;
   updateSettings: (patch: Partial<Settings>) => Promise<void>;
+  reviews: Review[];
+  fetchReviews: (seriesId: string) => Promise<Review[]>;
+  addReview: (seriesId: string, rating: number, comment: string) => Promise<{ error: string | null }>;
+  deleteReview: (id: string) => Promise<void>;
 }
 
 const Ctx = createContext<Store | null>(null);
@@ -166,12 +180,15 @@ const mapSeries = (r: any): Series => ({
   episodes: r.episodes,
   source: r.source,
   posterColor: r.poster_color,
+  posterImage: r.poster_image ?? undefined,
+  backgroundImage: r.background_image ?? undefined,
   trailerUrl: r.trailer_url ?? "",
   price: Number(r.price),
   trending: r.trending,
   isNew: r.is_new,
   topWatched: r.top_watched,
   featured: r.featured,
+  relatedIds: Array.isArray(r.related_ids) ? r.related_ids : [],
 });
 
 const seriesToRow = (s: Partial<Series> & { id?: string }) => ({
@@ -189,12 +206,15 @@ const seriesToRow = (s: Partial<Series> & { id?: string }) => ({
   episodes: s.episodes ?? 1,
   source: s.source ?? "Original",
   poster_color: s.posterColor ?? "from-rose-700 via-red-900 to-zinc-950",
+  poster_image: s.posterImage ?? null,
+  background_image: s.backgroundImage ?? null,
   trailer_url: s.trailerUrl ?? "",
   price: s.price ?? 0,
   trending: !!s.trending,
   is_new: !!s.isNew,
   top_watched: !!s.topWatched,
   featured: !!s.featured,
+  related_ids: s.relatedIds ?? [],
 });
 
 const mapOffer = (r: any): Offer => ({
@@ -304,6 +324,16 @@ const mapRequest = (r: any): SeriesRequest => ({
   userEmail: r.user_email ?? undefined,
 });
 
+const mapReview = (r: any): Review => ({
+  id: r.id,
+  seriesId: r.series_id,
+  userId: r.user_id,
+  userName: r.user_name ?? "",
+  rating: Number(r.rating),
+  comment: r.comment ?? "",
+  createdAt: new Date(r.created_at).getTime(),
+});
+
 const mapSettings = (r: any): Settings => ({
   logoText: r.logo_text ?? "MOVANA",
   logoUrl: r.logo_url ?? undefined,
@@ -364,6 +394,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [slides, setSlides] = useState<Slide[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [settings, setSettings] = useState<Settings>(defaultSettings);
 
   // Persist guest cart + favorites
@@ -554,6 +585,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (patch.episodes !== undefined) row.episodes = r.episodes;
       if (patch.source !== undefined) row.source = r.source;
       if (patch.posterColor !== undefined) row.poster_color = r.poster_color;
+      if (patch.posterImage !== undefined) row.poster_image = r.poster_image;
+      if (patch.backgroundImage !== undefined) row.background_image = r.background_image;
+      if (patch.relatedIds !== undefined) row.related_ids = r.related_ids;
       if (patch.trailerUrl !== undefined) row.trailer_url = r.trailer_url;
       if (patch.price !== undefined) row.price = r.price;
       if (patch.trending !== undefined) row.trending = r.trending;
@@ -697,6 +731,27 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         theme_preset: merged.themePreset,
         theme_mode: merged.themeMode,
       }).eq("id", 1);
+    },
+
+    reviews,
+    fetchReviews: async (seriesId) => {
+      const { data } = await supabase.from("reviews").select("*").eq("series_id", seriesId).order("created_at", { ascending: false });
+      const list = (data ?? []).map(mapReview);
+      setReviews((prev) => [...prev.filter((r) => r.seriesId !== seriesId), ...list]);
+      return list;
+    },
+    addReview: async (seriesId, rating, comment) => {
+      if (!user) return { error: "not_authenticated" };
+      const { data, error } = await supabase.from("reviews").insert({
+        series_id: seriesId, user_id: user.id, user_name: user.name, rating, comment,
+      } as any).select("*").single();
+      if (error || !data) return { error: error?.message ?? "failed" };
+      setReviews((prev) => [mapReview(data), ...prev]);
+      return { error: null };
+    },
+    deleteReview: async (id) => {
+      await supabase.from("reviews").delete().eq("id", id);
+      setReviews((prev) => prev.filter((r) => r.id !== id));
     },
   };
 

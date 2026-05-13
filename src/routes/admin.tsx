@@ -12,8 +12,9 @@ import { RequestsManager } from "@/components/admin/RequestsManager";
 import { SlidesManager } from "@/components/admin/SlidesManager";
 import { OffersManager } from "@/components/admin/OffersManager";
 import { SettingsManager } from "@/components/admin/SettingsManager";
+import { ReviewsManager } from "@/components/admin/ReviewsManager";
 
-type Tab = "dashboard" | "series" | "offers" | "orders" | "payments" | "requests" | "slides" | "settings";
+type Tab = "dashboard" | "series" | "offers" | "orders" | "payments" | "requests" | "reviews" | "slides" | "settings";
 
 export default function AdminPage() {
   const { t, lang } = useI18n();
@@ -48,6 +49,7 @@ export default function AdminPage() {
     { id: "orders", label: t("admin_orders"), icon: <ShoppingBag className="size-4" />, badge: orders.length },
     { id: "payments", label: t("admin_payments"), icon: <Wallet className="size-4" />, badge: stats.pendingPayments },
     { id: "requests", label: t("admin_requests"), icon: <MessageSquare className="size-4" />, badge: stats.openRequests },
+    { id: "reviews", label: lang === "ar" ? "المراجعات" : "Reviews", icon: <MessageSquare className="size-4" /> },
     { id: "slides", label: t("admin_slides"), icon: <ImageIcon className="size-4" /> },
     { id: "settings", label: t("admin_settings"), icon: <SettingsIcon className="size-4" /> },
   ];
@@ -103,6 +105,7 @@ export default function AdminPage() {
             {tab === "orders" && <OrdersManager />}
             {tab === "payments" && <PaymentsManager />}
             {tab === "requests" && <RequestsManager />}
+            {tab === "reviews" && <ReviewsManager />}
             {tab === "slides" && <SlidesManager />}
             {tab === "settings" && <SettingsManager />}
           </section>

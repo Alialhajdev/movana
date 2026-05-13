@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +8,8 @@ import { categoryMeta, type Category, type Series } from "@/lib/data";
 import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
+import { ImageUploader } from "./ImageUploader";
+import { X } from "lucide-react";
 
 const GRADIENTS = [
   "from-rose-700 via-red-900 to-zinc-950",
@@ -37,25 +39,37 @@ const blank = (): Series => ({
   posterColor: GRADIENTS[0],
   trailerUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
   price: 3000,
+  relatedIds: [],
 });
 
 export function SeriesFormDialog({ open, onOpenChange, series }: { open: boolean; onOpenChange: (b: boolean) => void; series: Series | null }) {
   const { t, lang } = useI18n();
-  const { addSeries, updateSeries } = useStore();
+  const { addSeries, updateSeries, series: allSeries } = useStore();
   const [form, setForm] = useState<Series>(blank());
   const [genresArInput, setGenresArInput] = useState("");
   const [genresEnInput, setGenresEnInput] = useState("");
+  const [relatedQuery, setRelatedQuery] = useState("");
 
   useEffect(() => {
     if (open) {
       const f = series ?? blank();
-      setForm(f);
+      setForm({ ...f, relatedIds: f.relatedIds ?? [] });
       setGenresArInput(f.genres.map((g) => g.ar).join(", "));
       setGenresEnInput(f.genres.map((g) => g.en).join(", "));
+      setRelatedQuery("");
     }
   }, [open, series]);
 
   const set = <K extends keyof Series>(k: K, v: Series[K]) => setForm((f) => ({ ...f, [k]: v }));
+
+  const relatedList = form.relatedIds ?? [];
+  const candidates = useMemo(() => {
+    const q = relatedQuery.trim().toLowerCase();
+    return allSeries
+      .filter((s) => s.id !== form.id && !relatedList.includes(s.id))
+      .filter((s) => !q || s.title.ar.toLowerCase().includes(q) || s.title.en.toLowerCase().includes(q))
+      .slice(0, 8);
+  }, [allSeries, relatedQuery, relatedList, form.id]);
 
   const submit = () => {
     if (!form.title.ar || !form.title.en) { toast.error(lang === "ar" ? "العنوان مطلوب" : "Title required"); return; }
@@ -99,13 +113,48 @@ export function SeriesFormDialog({ open, onOpenChange, series }: { open: boolean
           <Field label={t("trailer_url")}><Input value={form.trailerUrl} onChange={(e) => set("trailerUrl", e.target.value)} /></Field>
         </div>
 
+        {/* Images */}
+        <div className="grid md:grid-cols-2 gap-4 mt-4">
+          <ImageUploader label={lang === "ar" ? "صورة البوستر" : "Poster image"} value={form.posterImage} onChange={(v) => set("posterImage", v)} aspect="poster" />
+          <ImageUploader label={lang === "ar" ? "صورة الخلفية (صفحة المسلسل)" : "Background image (detail page)"} value={form.backgroundImage} onChange={(v) => set("backgroundImage", v)} aspect="wide" />
+        </div>
+
         <div className="mt-4">
-          <p className="text-xs text-muted-foreground mb-2">{t("poster_color")}</p>
+          <p className="text-xs text-muted-foreground mb-2">{t("poster_color")} ({lang === "ar" ? "بديل عند عدم وجود صورة" : "fallback when no image"})</p>
           <div className="flex flex-wrap gap-2">
             {GRADIENTS.map((g) => (
               <button key={g} type="button" onClick={() => set("posterColor", g)} className={`size-10 rounded bg-gradient-to-br ${g} ring-2 ${form.posterColor === g ? "ring-primary" : "ring-transparent"}`} />
             ))}
           </div>
+        </div>
+
+        {/* Related series */}
+        <div className="mt-4">
+          <p className="text-xs text-muted-foreground mb-2">{lang === "ar" ? "المسلسلات المشابهة" : "Related series"}</p>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {relatedList.length === 0 && <span className="text-xs text-muted-foreground">{lang === "ar" ? "لا يوجد" : "None"}</span>}
+            {relatedList.map((rid) => {
+              const s = allSeries.find((x) => x.id === rid);
+              return (
+                <span key={rid} className="inline-flex items-center gap-1 rounded-full bg-primary/15 text-primary px-3 py-1 text-xs">
+                  {s ? s.title[lang] : rid}
+                  <button type="button" onClick={() => set("relatedIds", relatedList.filter((x) => x !== rid))}>
+                    <X className="size-3" />
+                  </button>
+                </span>
+              );
+            })}
+          </div>
+          <Input placeholder={lang === "ar" ? "ابحث لإضافة..." : "Search to add..."} value={relatedQuery} onChange={(e) => setRelatedQuery(e.target.value)} />
+          {candidates.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {candidates.map((s) => (
+                <button key={s.id} type="button" onClick={() => { set("relatedIds", [...relatedList, s.id]); setRelatedQuery(""); }} className="rounded-full bg-white/5 hover:bg-white/10 px-3 py-1 text-xs">
+                  + {s.title[lang]}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">

@@ -231,8 +231,42 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          rating: number
+          series_id: string
+          updated_at: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          comment?: string
+          created_at?: string
+          id?: string
+          rating: number
+          series_id: string
+          updated_at?: string
+          user_id: string
+          user_name?: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          series_id?: string
+          updated_at?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: []
+      }
       series: {
         Row: {
+          background_image: string | null
           category: string
           created_at: string
           description_ar: string
@@ -246,6 +280,7 @@ export type Database = {
           poster_color: string
           poster_image: string | null
           price: number
+          related_ids: Json
           seasons: number
           slug: string
           source: string
@@ -258,6 +293,7 @@ export type Database = {
           year: number
         }
         Insert: {
+          background_image?: string | null
           category: string
           created_at?: string
           description_ar?: string
@@ -271,6 +307,7 @@ export type Database = {
           poster_color?: string
           poster_image?: string | null
           price?: number
+          related_ids?: Json
           seasons?: number
           slug: string
           source?: string
@@ -283,6 +320,7 @@ export type Database = {
           year?: number
         }
         Update: {
+          background_image?: string | null
           category?: string
           created_at?: string
           description_ar?: string
@@ -296,6 +334,7 @@ export type Database = {
           poster_color?: string
           poster_image?: string | null
           price?: number
+          related_ids?: Json
           seasons?: number
           slug?: string
           source?: string

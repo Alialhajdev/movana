@@ -21,6 +21,9 @@ export function SeriesCard({ series, className }: Props) {
       className={cn("group relative block w-[180px] sm:w-[210px] md:w-[230px] shrink-0 card-hover", className)}
     >
       <div className={cn("relative aspect-[2/3] overflow-hidden rounded-lg bg-gradient-to-br shadow-card", series.posterColor)}>
+        {series.posterImage && (
+          <img src={series.posterImage} alt={series.title[lang]} loading="lazy" className="absolute inset-0 size-full object-cover" />
+        )}
         <div className="absolute inset-0 flex flex-col justify-end p-3 bg-gradient-to-t from-black/95 via-black/30 to-transparent">
           <h3 className="font-display text-lg leading-tight text-white text-shadow-hero line-clamp-2">{series.title[lang]}</h3>
           <div className="mt-1 flex items-center gap-2 text-xs text-white/80">
