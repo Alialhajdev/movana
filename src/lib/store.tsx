@@ -92,7 +92,15 @@ export interface Settings {
   themeMode: ThemeMode;
 }
 
-interface Store {
+export interface Review {
+  id: string;
+  seriesId: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  createdAt: number;
+}
   user: User | null;
   authLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
