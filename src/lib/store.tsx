@@ -782,6 +782,46 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       await supabase.from("reviews").delete().eq("id", id);
       setReviews((prev) => prev.filter((r) => r.id !== id));
     },
+
+    wallets,
+    addWallet: async (w) => {
+      const sort_order = wallets.length;
+      const { data } = await supabase.from("wallets").insert({ name: w.name, number: w.number, icon: w.icon ?? null, active: w.active ?? true, sort_order } as any).select("*").single();
+      if (data) setWallets((arr) => [...arr, { id: data.id, name: data.name, number: data.number, icon: data.icon ?? undefined, active: data.active, order: data.sort_order }]);
+    },
+    updateWallet: async (id, patch) => {
+      const row: any = {};
+      if (patch.name !== undefined) row.name = patch.name;
+      if (patch.number !== undefined) row.number = patch.number;
+      if (patch.icon !== undefined) row.icon = patch.icon ?? null;
+      if (patch.active !== undefined) row.active = patch.active;
+      if (patch.order !== undefined) row.sort_order = patch.order;
+      const { data } = await supabase.from("wallets").update(row).eq("id", id).select("*").single();
+      if (data) setWallets((arr) => arr.map((w) => w.id === id ? { id: data.id, name: data.name, number: data.number, icon: data.icon ?? undefined, active: data.active, order: data.sort_order } : w));
+    },
+    deleteWallet: async (id) => {
+      await supabase.from("wallets").delete().eq("id", id);
+      setWallets((arr) => arr.filter((w) => w.id !== id));
+    },
+
+    listAdminUsers: async () => {
+      const { data, error } = await supabase.functions.invoke("admin-users", { body: { action: "list" } });
+      if (error || !data?.users) return [];
+      return data.users as AdminUser[];
+    },
+    deleteAdminUser: async (id) => {
+      const { data, error } = await supabase.functions.invoke("admin-users", { body: { action: "delete", id } });
+      if (error) return { error: error.message };
+      if (data?.error) return { error: data.error };
+      return { error: null };
+    },
+    resetAdminUserPassword: async (email) => {
+      const redirectTo = typeof window !== "undefined" ? `${window.location.origin}/login` : undefined;
+      const { data, error } = await supabase.functions.invoke("admin-users", { body: { action: "reset_password", email, redirectTo } });
+      if (error) return { error: error.message };
+      if (data?.error) return { error: data.error };
+      return { error: null, link: data?.action_link ?? null };
+    },
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
