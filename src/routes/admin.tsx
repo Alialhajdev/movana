@@ -50,6 +50,8 @@ export default function AdminPage() {
     { id: "offers", label: t("admin_offers"), icon: <Sparkles className="size-4" />, badge: stats.activeOffers },
     { id: "orders", label: t("admin_orders"), icon: <ShoppingBag className="size-4" />, badge: orders.length },
     { id: "payments", label: t("admin_payments"), icon: <Wallet className="size-4" />, badge: stats.pendingPayments },
+    { id: "wallets", label: lang === "ar" ? "المحافظ" : "Wallets", icon: <CreditCard className="size-4" /> },
+    { id: "users", label: lang === "ar" ? "المستخدمون" : "Users", icon: <Users className="size-4" /> },
     { id: "requests", label: t("admin_requests"), icon: <MessageSquare className="size-4" />, badge: stats.openRequests },
     { id: "reviews", label: lang === "ar" ? "المراجعات" : "Reviews", icon: <MessageSquare className="size-4" /> },
     { id: "slides", label: t("admin_slides"), icon: <ImageIcon className="size-4" /> },
