@@ -105,6 +105,7 @@ export default function AdminPage() {
             {tab === "orders" && <OrdersManager />}
             {tab === "payments" && <PaymentsManager />}
             {tab === "requests" && <RequestsManager />}
+            {tab === "reviews" && <ReviewsManager />}
             {tab === "slides" && <SlidesManager />}
             {tab === "settings" && <SettingsManager />}
           </section>
