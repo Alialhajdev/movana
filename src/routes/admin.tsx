@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Film, ImageIcon, MessageSquare, Settings as SettingsIcon, ShoppingBag, Sparkles, Users, Wallet } from "lucide-react";
+import { BarChart3, Film, ImageIcon, MessageSquare, Settings as SettingsIcon, ShoppingBag, Sparkles, Users, Wallet, CreditCard } from "lucide-react";
 import { Header, Footer } from "@/components/Layout";
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
@@ -13,8 +13,10 @@ import { SlidesManager } from "@/components/admin/SlidesManager";
 import { OffersManager } from "@/components/admin/OffersManager";
 import { SettingsManager } from "@/components/admin/SettingsManager";
 import { ReviewsManager } from "@/components/admin/ReviewsManager";
+import { WalletsManager } from "@/components/admin/WalletsManager";
+import { UsersManager } from "@/components/admin/UsersManager";
 
-type Tab = "dashboard" | "series" | "offers" | "orders" | "payments" | "requests" | "reviews" | "slides" | "settings";
+type Tab = "dashboard" | "series" | "offers" | "orders" | "payments" | "wallets" | "users" | "requests" | "reviews" | "slides" | "settings";
 
 export default function AdminPage() {
   const { t, lang } = useI18n();
@@ -48,6 +50,8 @@ export default function AdminPage() {
     { id: "offers", label: t("admin_offers"), icon: <Sparkles className="size-4" />, badge: stats.activeOffers },
     { id: "orders", label: t("admin_orders"), icon: <ShoppingBag className="size-4" />, badge: orders.length },
     { id: "payments", label: t("admin_payments"), icon: <Wallet className="size-4" />, badge: stats.pendingPayments },
+    { id: "wallets", label: lang === "ar" ? "المحافظ" : "Wallets", icon: <CreditCard className="size-4" /> },
+    { id: "users", label: lang === "ar" ? "المستخدمون" : "Users", icon: <Users className="size-4" /> },
     { id: "requests", label: t("admin_requests"), icon: <MessageSquare className="size-4" />, badge: stats.openRequests },
     { id: "reviews", label: lang === "ar" ? "المراجعات" : "Reviews", icon: <MessageSquare className="size-4" /> },
     { id: "slides", label: t("admin_slides"), icon: <ImageIcon className="size-4" /> },
@@ -104,6 +108,8 @@ export default function AdminPage() {
             {tab === "offers" && <OffersManager />}
             {tab === "orders" && <OrdersManager />}
             {tab === "payments" && <PaymentsManager />}
+            {tab === "wallets" && <WalletsManager />}
+            {tab === "users" && <UsersManager />}
             {tab === "requests" && <RequestsManager />}
             {tab === "reviews" && <ReviewsManager />}
             {tab === "slides" && <SlidesManager />}
