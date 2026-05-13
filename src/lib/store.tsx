@@ -148,6 +148,10 @@ interface Store {
   deleteAddress: (id: string) => Promise<void>;
   settings: Settings;
   updateSettings: (patch: Partial<Settings>) => Promise<void>;
+  reviews: Review[];
+  fetchReviews: (seriesId: string) => Promise<Review[]>;
+  addReview: (seriesId: string, rating: number, comment: string) => Promise<{ error: string | null }>;
+  deleteReview: (id: string) => Promise<void>;
 }
 
 const Ctx = createContext<Store | null>(null);
