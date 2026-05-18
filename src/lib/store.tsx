@@ -427,7 +427,7 @@ function applyTheme(s: Settings) {
   else r.classList.add("dark");
 }
 
-const defaultSettings: Settings = { logoText: "MOVANA", logoUrl: undefined, themePreset: "red", themeMode: "dark" };
+const defaultSettings: Settings = { logoText: "MOVANA", logoUrl: undefined, themePreset: "red", themeMode: "dark", popupActive: false };
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
