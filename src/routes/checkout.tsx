@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Upload, Wallet, Truck, CreditCard } from "lucide-react";
+import { Upload, Wallet, Truck } from "lucide-react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { Steps } from "./cart";
 import { AddressManager } from "@/components/AddressManager";
