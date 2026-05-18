@@ -65,6 +65,36 @@ export type Database = {
         }
         Relationships: []
       }
+      categories: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name_ar: string
+          name_en: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id: string
+          name_ar: string
+          name_en: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name_ar?: string
+          name_en?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
@@ -386,25 +416,43 @@ export type Database = {
           id: number
           logo_text: string
           logo_url: string | null
+          popup_active: boolean
+          popup_text_ar: string | null
+          popup_text_en: string | null
+          popup_title_ar: string | null
+          popup_title_en: string | null
           theme_mode: string
           theme_preset: string
           updated_at: string
+          whatsapp_number: string | null
         }
         Insert: {
           id?: number
           logo_text?: string
           logo_url?: string | null
+          popup_active?: boolean
+          popup_text_ar?: string | null
+          popup_text_en?: string | null
+          popup_title_ar?: string | null
+          popup_title_en?: string | null
           theme_mode?: string
           theme_preset?: string
           updated_at?: string
+          whatsapp_number?: string | null
         }
         Update: {
           id?: number
           logo_text?: string
           logo_url?: string | null
+          popup_active?: boolean
+          popup_text_ar?: string | null
+          popup_text_en?: string | null
+          popup_title_ar?: string | null
+          popup_title_en?: string | null
           theme_mode?: string
           theme_preset?: string
           updated_at?: string
+          whatsapp_number?: string | null
         }
         Relationships: []
       }
