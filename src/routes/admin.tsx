@@ -107,6 +107,7 @@ export default function AdminPage() {
               </div>
             )}
             {tab === "series" && <SeriesManager />}
+            {tab === "categories" && <CategoriesManager />}
             {tab === "offers" && <OffersManager />}
             {tab === "orders" && <OrdersManager />}
             {tab === "payments" && <PaymentsManager />}
