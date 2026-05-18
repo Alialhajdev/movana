@@ -115,12 +115,6 @@ export function HeroSlider() {
                   {t("view_more")}
                 </a>
               ) : null}
-              <Link
-                to="/requests"
-                className="inline-flex items-center gap-2 rounded-md glass px-5 py-3 text-sm font-bold hover:bg-white/10 transition"
-              >
-                {t("nav_requests")}
-              </Link>
             </div>
           </div>
         </div>

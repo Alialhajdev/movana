@@ -44,7 +44,12 @@ const blank = (): Series => ({
 
 export function SeriesFormDialog({ open, onOpenChange, series }: { open: boolean; onOpenChange: (b: boolean) => void; series: Series | null }) {
   const { t, lang } = useI18n();
-  const { addSeries, updateSeries, series: allSeries } = useStore();
+  const { addSeries, updateSeries, series: allSeries, categories } = useStore();
+  const catOptions = useMemo(() => {
+    const active = (categories ?? []).filter((c) => c.active !== false);
+    if (active.length > 0) return active.map((c) => ({ id: c.id, label: lang === "ar" ? c.nameAr : c.nameEn }));
+    return (Object.keys(categoryMeta) as Category[]).map((c) => ({ id: c, label: categoryMeta[c][lang] }));
+  }, [categories, lang]);
   const [form, setForm] = useState<Series>(blank());
   const [genresArInput, setGenresArInput] = useState("");
   const [genresEnInput, setGenresEnInput] = useState("");
@@ -97,8 +102,8 @@ export function SeriesFormDialog({ open, onOpenChange, series }: { open: boolean
           <Field label={t("desc_en")}><Textarea rows={3} value={form.description.en} onChange={(e) => set("description", { ...form.description, en: e.target.value })} /></Field>
           <Field label={t("category")}>
             <select value={form.category} onChange={(e) => set("category", e.target.value as Category)} className="w-full rounded-md bg-input px-3 py-2 text-sm">
-              {(["korean","turkish","english","netflix","appletv"] as Category[]).map((c) => (
-                <option key={c} value={c}>{categoryMeta[c][lang]}</option>
+              {catOptions.map((c) => (
+                <option key={c.id} value={c.id}>{c.label}</option>
               ))}
             </select>
           </Field>
