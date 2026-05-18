@@ -455,17 +455,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   // ---------- Initial public data ----------
   const fetchPublic = async () => {
-    const [s, o, sl, st, w] = await Promise.all([
+    const [s, o, sl, st, w, c] = await Promise.all([
       supabase.from("series").select("*").order("created_at", { ascending: true }),
       supabase.from("offers").select("*").order("sort_order", { ascending: true }),
       supabase.from("slides").select("*").order("sort_order", { ascending: true }),
       supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
       supabase.from("wallets").select("*").order("sort_order", { ascending: true }),
+      supabase.from("categories").select("*").order("sort_order", { ascending: true }),
     ]);
     if (s.data) setSeries(s.data.map(mapSeries));
     if (o.data) setOffers(o.data.map(mapOffer));
     if (sl.data) setSlides(sl.data.map(mapSlide));
     if (w.data) setWallets(w.data.map((r: any) => ({ id: r.id, name: r.name, number: r.number, icon: r.icon ?? undefined, active: r.active, order: r.sort_order })));
+    if (c.data) setCategories(c.data.map((r: any) => ({ id: r.id, nameAr: r.name_ar, nameEn: r.name_en, active: r.active, order: r.sort_order })));
     if (st.data) {
       const ms = mapSettings(st.data);
       setSettings(ms);
