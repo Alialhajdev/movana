@@ -43,7 +43,7 @@ export function HeroSlider() {
         >
           <div className="hero-overlay relative h-full w-full">
             {s.image ? (
-              <img src={s.image} alt="" className="h-full w-full object-cover animate-ken-burns" />
+              <img src={s.image} alt="" className="h-full w-full object-cover object-top animate-ken-burns" />
             ) : (
               <>
                 <img src={heroes[idx % heroes.length]} alt="" className="h-full w-full object-cover animate-ken-burns" />
