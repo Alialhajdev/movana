@@ -90,6 +90,20 @@ export interface Settings {
   logoUrl?: string;
   themePreset: ThemePreset;
   themeMode: ThemeMode;
+  popupActive: boolean;
+  popupTitleAr?: string;
+  popupTitleEn?: string;
+  popupTextAr?: string;
+  popupTextEn?: string;
+  whatsappNumber?: string;
+}
+
+export interface CategoryItem {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  active: boolean;
+  order: number;
 }
 
 export interface Wallet {
@@ -175,6 +189,10 @@ interface Store {
   addWallet: (w: Omit<Wallet, "id" | "order">) => Promise<void>;
   updateWallet: (id: string, patch: Partial<Wallet>) => Promise<void>;
   deleteWallet: (id: string) => Promise<void>;
+  categories: CategoryItem[];
+  addCategory: (c: Omit<CategoryItem, "order">) => Promise<{ error: string | null }>;
+  updateCategory: (id: string, patch: Partial<CategoryItem>) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
   listAdminUsers: () => Promise<AdminUser[]>;
   deleteAdminUser: (id: string) => Promise<{ error: string | null }>;
   resetAdminUserPassword: (email: string) => Promise<{ error: string | null; link?: string | null }>;
@@ -365,6 +383,12 @@ const mapSettings = (r: any): Settings => ({
   logoUrl: r.logo_url ?? undefined,
   themePreset: (r.theme_preset ?? "red") as ThemePreset,
   themeMode: (r.theme_mode ?? "dark") as ThemeMode,
+  popupActive: !!r.popup_active,
+  popupTitleAr: r.popup_title_ar ?? undefined,
+  popupTitleEn: r.popup_title_en ?? undefined,
+  popupTextAr: r.popup_text_ar ?? undefined,
+  popupTextEn: r.popup_text_en ?? undefined,
+  whatsappNumber: r.whatsapp_number ?? undefined,
 });
 
 // ---------- Theme application ----------
@@ -407,7 +431,7 @@ function applyTheme(s: Settings) {
   else r.classList.add("dark");
 }
 
-const defaultSettings: Settings = { logoText: "MOVANA", logoUrl: undefined, themePreset: "red", themeMode: "dark" };
+const defaultSettings: Settings = { logoText: "MOVANA", logoUrl: undefined, themePreset: "red", themeMode: "dark", popupActive: false };
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -423,6 +447,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [wallets, setWallets] = useState<Wallet[]>([]);
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
 
   // Persist guest cart + favorites
   useEffect(() => { localStorage.setItem("movana_cart", JSON.stringify(cart)); }, [cart]);
@@ -430,17 +455,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   // ---------- Initial public data ----------
   const fetchPublic = async () => {
-    const [s, o, sl, st, w] = await Promise.all([
+    const [s, o, sl, st, w, c] = await Promise.all([
       supabase.from("series").select("*").order("created_at", { ascending: true }),
       supabase.from("offers").select("*").order("sort_order", { ascending: true }),
       supabase.from("slides").select("*").order("sort_order", { ascending: true }),
       supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
       supabase.from("wallets").select("*").order("sort_order", { ascending: true }),
+      supabase.from("categories").select("*").order("sort_order", { ascending: true }),
     ]);
     if (s.data) setSeries(s.data.map(mapSeries));
     if (o.data) setOffers(o.data.map(mapOffer));
     if (sl.data) setSlides(sl.data.map(mapSlide));
     if (w.data) setWallets(w.data.map((r: any) => ({ id: r.id, name: r.name, number: r.number, icon: r.icon ?? undefined, active: r.active, order: r.sort_order })));
+    if (c.data) setCategories(c.data.map((r: any) => ({ id: r.id, nameAr: r.name_ar, nameEn: r.name_en, active: r.active, order: r.sort_order })));
     if (st.data) {
       const ms = mapSettings(st.data);
       setSettings(ms);
@@ -759,7 +786,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         logo_url: merged.logoUrl ?? null,
         theme_preset: merged.themePreset,
         theme_mode: merged.themeMode,
-      }).eq("id", 1);
+        popup_active: merged.popupActive,
+        popup_title_ar: merged.popupTitleAr ?? null,
+        popup_title_en: merged.popupTitleEn ?? null,
+        popup_text_ar: merged.popupTextAr ?? null,
+        popup_text_en: merged.popupTextEn ?? null,
+        whatsapp_number: merged.whatsappNumber ?? null,
+      } as any).eq("id", 1);
     },
 
     reviews,
@@ -802,6 +835,28 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     deleteWallet: async (id) => {
       await supabase.from("wallets").delete().eq("id", id);
       setWallets((arr) => arr.filter((w) => w.id !== id));
+    },
+
+    categories,
+    addCategory: async (c) => {
+      const sort_order = categories.length;
+      const { data, error } = await supabase.from("categories").insert({ id: c.id, name_ar: c.nameAr, name_en: c.nameEn, active: c.active ?? true, sort_order } as any).select("*").single();
+      if (error) return { error: error.message };
+      if (data) setCategories((arr) => [...arr, { id: data.id, nameAr: data.name_ar, nameEn: data.name_en, active: data.active, order: data.sort_order }]);
+      return { error: null };
+    },
+    updateCategory: async (id, patch) => {
+      const row: any = {};
+      if (patch.nameAr !== undefined) row.name_ar = patch.nameAr;
+      if (patch.nameEn !== undefined) row.name_en = patch.nameEn;
+      if (patch.active !== undefined) row.active = patch.active;
+      if (patch.order !== undefined) row.sort_order = patch.order;
+      const { data } = await supabase.from("categories").update(row).eq("id", id).select("*").single();
+      if (data) setCategories((arr) => arr.map((c) => c.id === id ? { id: data.id, nameAr: data.name_ar, nameEn: data.name_en, active: data.active, order: data.sort_order } : c));
+    },
+    deleteCategory: async (id) => {
+      await supabase.from("categories").delete().eq("id", id);
+      setCategories((arr) => arr.filter((c) => c.id !== id));
     },
 
     listAdminUsers: async () => {
