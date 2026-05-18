@@ -117,7 +117,7 @@ export function WalletsManager() {
             <tbody>
               {wallets.map((w) => (
                 <tr key={w.id} className="border-t border-border">
-                  <td className="p-3 text-2xl">{w.icon || "💳"}</td>
+                  <td className="p-3">{w.icon && /^https?:\/\//.test(w.icon) ? <img src={w.icon} alt="" className="size-8 object-contain" /> : <span className="text-2xl">{w.icon || "💳"}</span>}</td>
                   <td className="p-3 font-bold">{w.name}</td>
                   <td className="p-3 font-mono">{w.number}</td>
                   <td className="p-3">
