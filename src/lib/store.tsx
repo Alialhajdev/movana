@@ -189,6 +189,10 @@ interface Store {
   addWallet: (w: Omit<Wallet, "id" | "order">) => Promise<void>;
   updateWallet: (id: string, patch: Partial<Wallet>) => Promise<void>;
   deleteWallet: (id: string) => Promise<void>;
+  categories: CategoryItem[];
+  addCategory: (c: Omit<CategoryItem, "order">) => Promise<{ error: string | null }>;
+  updateCategory: (id: string, patch: Partial<CategoryItem>) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
   listAdminUsers: () => Promise<AdminUser[]>;
   deleteAdminUser: (id: string) => Promise<{ error: string | null }>;
   resetAdminUserPassword: (email: string) => Promise<{ error: string | null; link?: string | null }>;
