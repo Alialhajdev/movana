@@ -90,7 +90,7 @@ export default function SeriesDetail() {
       <main className="pb-24 md:pb-12">
         <section className="relative h-[80vh] min-h-[560px] w-full overflow-hidden">
           {s.backgroundImage ? (
-            <img src={s.backgroundImage} alt="" className="absolute inset-0 size-full object-cover" />
+            <img src={s.backgroundImage} alt="" className="absolute inset-0 size-full object-cover object-top" />
           ) : (
             <div className={cn("absolute inset-0 bg-gradient-to-br animate-ken-burns", s.posterColor)} />
           )}
