@@ -9,7 +9,8 @@ const empty: Draft = { id: "", nameAr: "", nameEn: "", active: true };
 
 export function CategoriesManager() {
   const { lang } = useI18n();
-  const { categories, addCategory, updateCategory, deleteCategory } = useStore();
+  const { categories, addCategory, updateCategory, deleteCategory, reorderCategory } = useStore();
+  const sorted = [...categories].sort((a, b) => a.order - b.order);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft>(empty);
   const [creating, setCreating] = useState(false);
