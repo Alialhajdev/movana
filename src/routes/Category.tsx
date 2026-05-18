@@ -38,9 +38,10 @@ export default function CategoryPage() {
     return base;
   }, [slug, q, year, minRating, sort, allSeries]);
 
+  const dynCat = categories.find((c) => c.id === slug);
   const title = SPECIAL.has(slug)
     ? slug === "trending" ? t("cat_trending") : slug === "new" ? t("cat_new") : t("cat_top")
-    : (categoryMeta[slug as Category]?.[lang] ?? slug);
+    : (dynCat ? (lang === "ar" ? dynCat.nameAr : dynCat.nameEn) : (categoryMeta[slug as Category]?.[lang] ?? slug));
 
   const years = Array.from(new Set(allSeries.map((s) => s.year))).sort((a, b) => b - a);
 
