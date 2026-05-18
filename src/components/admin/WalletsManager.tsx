@@ -56,26 +56,46 @@ export function WalletsManager() {
       </div>
 
       {(creating || editingId) && (
-        <div className="rounded-xl bg-input/40 p-4 mb-4 grid sm:grid-cols-[80px_1fr_1fr_auto_auto] gap-3 items-end">
-          <div>
-            <label className="text-xs text-muted-foreground">{lang === "ar" ? "أيقونة" : "Icon"}</label>
-            <input value={draft.icon ?? ""} onChange={(e) => setDraft({ ...draft, icon: e.target.value })} className="mt-1 w-full h-10 rounded-md bg-background border border-border px-2 text-center text-xl" placeholder="💳" />
+        <div className="rounded-xl bg-input/40 p-4 mb-4 space-y-3">
+          <div className="flex items-start gap-3">
+            <div className="shrink-0">
+              <label className="text-xs text-muted-foreground block mb-1">{lang === "ar" ? "أيقونة" : "Icon"}</label>
+              <div className="relative size-16 rounded-md bg-background border border-border overflow-hidden grid place-items-center">
+                {draft.icon && /^https?:\/\//.test(draft.icon) ? (
+                  <img src={draft.icon} alt="" className="size-full object-contain" />
+                ) : (
+                  <span className="text-2xl">{draft.icon || "💳"}</span>
+                )}
+                <label className="absolute inset-0 cursor-pointer hover:bg-black/40 transition grid place-items-center text-white opacity-0 hover:opacity-100">
+                  {uploading ? <Loader2 className="size-5 animate-spin" /> : <Upload className="size-5" />}
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadIcon(f); }} />
+                </label>
+              </div>
+            </div>
+            <div className="flex-1 grid sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground">{lang === "ar" ? "الاسم" : "Name"}</label>
+                <input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className="mt-1 w-full h-10 rounded-md bg-background border border-border px-3" placeholder="Movana Wallet" />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{lang === "ar" ? "الرقم" : "Number"}</label>
+                <input value={draft.number} onChange={(e) => setDraft({ ...draft, number: e.target.value })} className="mt-1 w-full h-10 rounded-md bg-background border border-border px-3 font-mono" placeholder="0773 123 456" />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="text-xs text-muted-foreground">{lang === "ar" ? "إيموجي أو رابط أيقونة" : "Emoji or icon URL"}</label>
+                <input value={draft.icon ?? ""} onChange={(e) => setDraft({ ...draft, icon: e.target.value })} className="mt-1 w-full h-10 rounded-md bg-background border border-border px-3" placeholder="💳 or https://..." />
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="text-xs text-muted-foreground">{lang === "ar" ? "الاسم" : "Name"}</label>
-            <input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className="mt-1 w-full h-10 rounded-md bg-background border border-border px-3" placeholder="Movana Wallet" />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground">{lang === "ar" ? "الرقم" : "Number"}</label>
-            <input value={draft.number} onChange={(e) => setDraft({ ...draft, number: e.target.value })} className="mt-1 w-full h-10 rounded-md bg-background border border-border px-3 font-mono" placeholder="0773 123 456" />
-          </div>
-          <label className="inline-flex items-center gap-2 text-sm h-10">
-            <input type="checkbox" checked={draft.active} onChange={(e) => setDraft({ ...draft, active: e.target.checked })} />
-            {lang === "ar" ? "مفعّلة" : "Active"}
-          </label>
-          <div className="flex gap-2">
-            <button onClick={save} className="rounded-md gradient-red text-primary-foreground px-3 h-10 text-sm font-bold">{lang === "ar" ? "حفظ" : "Save"}</button>
-            <button onClick={cancel} className="rounded-md bg-secondary px-3 h-10 text-sm">{lang === "ar" ? "إلغاء" : "Cancel"}</button>
+          <div className="flex items-center justify-between gap-3">
+            <label className="inline-flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={draft.active} onChange={(e) => setDraft({ ...draft, active: e.target.checked })} />
+              {lang === "ar" ? "مفعّلة" : "Active"}
+            </label>
+            <div className="flex gap-2">
+              <button onClick={cancel} className="rounded-md bg-secondary px-3 h-10 text-sm">{lang === "ar" ? "إلغاء" : "Cancel"}</button>
+              <button onClick={save} className="rounded-md gradient-red text-primary-foreground px-4 h-10 text-sm font-bold">{lang === "ar" ? "حفظ" : "Save"}</button>
+            </div>
           </div>
         </div>
       )}
