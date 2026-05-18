@@ -43,8 +43,7 @@ export default function CheckoutPage() {
   };
 
   const methods = [
-    { id: "wallet_transfer" as const, label: t("pay_wallet_transfer"), icon: <Wallet className="size-5" /> },
-    { id: "wallet" as const, label: t("pay_wallet"), icon: <CreditCard className="size-5" /> },
+    { id: "wallet" as const, label: t("pay_wallet"), icon: <Wallet className="size-5" /> },
     { id: "cod" as const, label: t("pay_cod"), icon: <Truck className="size-5" /> },
   ];
 
