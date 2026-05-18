@@ -95,9 +95,17 @@ export function CategoriesManager() {
                   <td className="p-3">{c.nameAr}</td>
                   <td className="p-3">{c.nameEn}</td>
                   <td className="p-3">
-                    {c.active
-                      ? <span className="inline-flex items-center gap-1 text-emerald-400 text-xs"><Check className="size-3" /> {lang === "ar" ? "مفعّلة" : "Active"}</span>
-                      : <span className="inline-flex items-center gap-1 text-muted-foreground text-xs"><X className="size-3" /> {lang === "ar" ? "متوقفة" : "Off"}</span>}
+                    <button
+                      onClick={() => updateCategory(c.id, { active: !c.active })}
+                      className={c.active
+                        ? "inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 px-2.5 py-1 text-xs font-medium transition"
+                        : "inline-flex items-center gap-1 rounded-full bg-white/5 text-muted-foreground hover:bg-white/10 px-2.5 py-1 text-xs font-medium transition"}
+                      title={lang === "ar" ? "اضغط للتبديل" : "Click to toggle"}
+                    >
+                      {c.active
+                        ? <><Check className="size-3" /> {lang === "ar" ? "مفعّلة" : "Active"}</>
+                        : <><X className="size-3" /> {lang === "ar" ? "متوقفة" : "Hidden"}</>}
+                    </button>
                   </td>
                   <td className="p-3">
                     <div className="flex gap-1 justify-end">
