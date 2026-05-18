@@ -14,6 +14,23 @@ export function WalletsManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft>(empty);
   const [creating, setCreating] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const uploadIcon = async (file: File) => {
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "png";
+      const path = `wallets/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage.from("series-images").upload(path, file, { upsert: false });
+      if (error) throw error;
+      const { data } = supabase.storage.from("series-images").getPublicUrl(path);
+      setDraft((d) => ({ ...d, icon: data.publicUrl }));
+    } catch (e: any) {
+      toast.error(e.message ?? "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const startEdit = (w: Wallet) => {
     setEditingId(w.id);
