@@ -60,8 +60,7 @@ export default function CheckoutPage() {
 
             <div className="glass rounded-2xl p-5">
               <h3 className="font-bold mb-4">{t("pay_method")}</h3>
-              <div className="grid sm:grid-cols-3 gap-3">
-                {methods.map((m) => (
+              <div className="grid sm:grid-cols-2 gap-3">{methods.map((m) => (
                   <label
                     key={m.id}
                     className={cn(
