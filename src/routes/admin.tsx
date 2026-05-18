@@ -110,6 +110,7 @@ export default function AdminPage() {
             )}
             {tab === "series" && <SeriesManager />}
             {tab === "categories" && <CategoriesManager />}
+            {tab === "navlinks" && <NavLinksManager />}
             {tab === "offers" && <OffersManager />}
             {tab === "orders" && <OrdersManager />}
             {tab === "payments" && <PaymentsManager />}
