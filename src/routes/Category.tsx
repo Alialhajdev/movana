@@ -11,7 +11,7 @@ const SPECIAL = new Set(["trending", "new", "top"]);
 export default function CategoryPage() {
   const { slug = "" } = useParams<{ slug: string }>();
   const { t, lang } = useI18n();
-  const { series: allSeries } = useStore();
+  const { series: allSeries, categories } = useStore();
   const [year, setYear] = useState<string>("all");
   const [minRating, setMinRating] = useState(0);
   const [sort, setSort] = useState<"new" | "rating" | "popular">("new");
