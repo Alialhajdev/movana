@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 export function Header() {
   const { t, lang, toggle } = useI18n();
-  const { user, cartCount, logout, settings } = useStore();
+  const { user, cartCount, logout, settings, navLinks } = useStore();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -23,14 +23,19 @@ export function Header() {
 
   useEffect(() => setOpen(false), [path]);
 
-  const links = [
-    { to: "/", label: t("nav_home"), end: true },
-    { to: "/category/korean", label: t("nav_korean") },
-    { to: "/category/turkish", label: t("nav_turkish") },
-    { to: "/category/english", label: t("nav_english") },
-    { to: "/category/trending", label: t("nav_trending") },
-    { to: "/category/new", label: t("nav_new") },
-  ];
+  const links = navLinks.length > 0
+    ? [...navLinks]
+        .filter((n) => n.active)
+        .sort((a, b) => a.order - b.order)
+        .map((n) => ({ to: n.url, label: lang === "ar" ? n.labelAr : n.labelEn, end: n.url === "/" }))
+    : [
+        { to: "/", label: t("nav_home"), end: true },
+        { to: "/category/korean", label: t("nav_korean"), end: false },
+        { to: "/category/turkish", label: t("nav_turkish"), end: false },
+        { to: "/category/english", label: t("nav_english"), end: false },
+        { to: "/category/trending", label: t("nav_trending"), end: false },
+        { to: "/category/new", label: t("nav_new"), end: false },
+      ];
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();

@@ -115,6 +115,15 @@ export interface Wallet {
   order: number;
 }
 
+export interface NavLinkItem {
+  id: string;
+  labelAr: string;
+  labelEn: string;
+  url: string;
+  active: boolean;
+  order: number;
+}
+
 export interface AdminUser {
   id: string;
   email: string | null;
@@ -194,6 +203,11 @@ interface Store {
   updateCategory: (id: string, patch: Partial<CategoryItem>) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
   reorderCategory: (id: string, dir: "up" | "down") => Promise<void>;
+  navLinks: NavLinkItem[];
+  addNavLink: (n: Omit<NavLinkItem, "id" | "order">) => Promise<{ error: string | null }>;
+  updateNavLink: (id: string, patch: Partial<NavLinkItem>) => Promise<void>;
+  deleteNavLink: (id: string) => Promise<void>;
+  reorderNavLink: (id: string, dir: "up" | "down") => Promise<void>;
   listAdminUsers: () => Promise<AdminUser[]>;
   deleteAdminUser: (id: string) => Promise<{ error: string | null }>;
   resetAdminUserPassword: (email: string) => Promise<{ error: string | null; link?: string | null }>;
@@ -450,25 +464,29 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [wallets, setWallets] = useState<Wallet[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
 
+  const [navLinks, setNavLinks] = useState<NavLinkItem[]>([]);
+
   // Persist guest cart + favorites
   useEffect(() => { localStorage.setItem("movana_cart", JSON.stringify(cart)); }, [cart]);
   useEffect(() => { if (!user) localStorage.setItem("movana_fav", JSON.stringify(favorites)); }, [favorites, user]);
 
   // ---------- Initial public data ----------
   const fetchPublic = async () => {
-    const [s, o, sl, st, w, c] = await Promise.all([
+    const [s, o, sl, st, w, c, nl] = await Promise.all([
       supabase.from("series").select("*").order("created_at", { ascending: true }),
       supabase.from("offers").select("*").order("sort_order", { ascending: true }),
       supabase.from("slides").select("*").order("sort_order", { ascending: true }),
       supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
       supabase.from("wallets").select("*").order("sort_order", { ascending: true }),
       supabase.from("categories").select("*").order("sort_order", { ascending: true }),
+      supabase.from("nav_links" as any).select("*").order("sort_order", { ascending: true }),
     ]);
     if (s.data) setSeries(s.data.map(mapSeries));
     if (o.data) setOffers(o.data.map(mapOffer));
     if (sl.data) setSlides(sl.data.map(mapSlide));
     if (w.data) setWallets(w.data.map((r: any) => ({ id: r.id, name: r.name, number: r.number, icon: r.icon ?? undefined, active: r.active, order: r.sort_order })));
     if (c.data) setCategories(c.data.map((r: any) => ({ id: r.id, nameAr: r.name_ar, nameEn: r.name_en, active: r.active, order: r.sort_order })));
+    if (nl.data) setNavLinks((nl.data as any[]).map((r: any) => ({ id: r.id, labelAr: r.label_ar, labelEn: r.label_en, url: r.url, active: r.active, order: r.sort_order })));
     if (st.data) {
       const ms = mapSettings(st.data);
       setSettings(ms);
@@ -870,6 +888,42 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       await Promise.all([
         supabase.from("categories").update({ sort_order: b.order }).eq("id", a.id),
         supabase.from("categories").update({ sort_order: a.order }).eq("id", b.id),
+      ]);
+    },
+
+
+    navLinks,
+    addNavLink: async (n) => {
+      const sort_order = navLinks.length;
+      const { data, error } = await supabase.from("nav_links" as any).insert({ label_ar: n.labelAr, label_en: n.labelEn, url: n.url, active: n.active ?? true, sort_order } as any).select("*").single();
+      if (error) return { error: error.message };
+      if (data) setNavLinks((arr) => [...arr, { id: (data as any).id, labelAr: (data as any).label_ar, labelEn: (data as any).label_en, url: (data as any).url, active: (data as any).active, order: (data as any).sort_order }]);
+      return { error: null };
+    },
+    updateNavLink: async (id, patch) => {
+      const row: any = {};
+      if (patch.labelAr !== undefined) row.label_ar = patch.labelAr;
+      if (patch.labelEn !== undefined) row.label_en = patch.labelEn;
+      if (patch.url !== undefined) row.url = patch.url;
+      if (patch.active !== undefined) row.active = patch.active;
+      if (patch.order !== undefined) row.sort_order = patch.order;
+      const { data } = await supabase.from("nav_links" as any).update(row).eq("id", id).select("*").single();
+      if (data) setNavLinks((arr) => arr.map((n) => n.id === id ? { id: (data as any).id, labelAr: (data as any).label_ar, labelEn: (data as any).label_en, url: (data as any).url, active: (data as any).active, order: (data as any).sort_order } : n));
+    },
+    deleteNavLink: async (id) => {
+      await supabase.from("nav_links" as any).delete().eq("id", id);
+      setNavLinks((arr) => arr.filter((n) => n.id !== id).map((n, i) => ({ ...n, order: i })));
+    },
+    reorderNavLink: async (id, dir) => {
+      const sorted = [...navLinks].sort((a, b) => a.order - b.order);
+      const i = sorted.findIndex((n) => n.id === id);
+      const j = dir === "up" ? i - 1 : i + 1;
+      if (i < 0 || j < 0 || j >= sorted.length) return;
+      const a = sorted[i], b = sorted[j];
+      setNavLinks(sorted.map((n) => n.id === a.id ? { ...n, order: b.order } : n.id === b.id ? { ...n, order: a.order } : n));
+      await Promise.all([
+        supabase.from("nav_links" as any).update({ sort_order: b.order }).eq("id", a.id),
+        supabase.from("nav_links" as any).update({ sort_order: a.order }).eq("id", b.id),
       ]);
     },
 

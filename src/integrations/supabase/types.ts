@@ -121,6 +121,39 @@ export type Database = {
           },
         ]
       }
+      nav_links: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          label_ar: string
+          label_en: string
+          sort_order: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          label_ar: string
+          label_en: string
+          sort_order?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          label_ar?: string
+          label_en?: string
+          sort_order?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       offers: {
         Row: {
           active: boolean
