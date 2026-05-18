@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { Field } from "./login";
@@ -8,8 +9,11 @@ import { useStore } from "@/lib/store";
 export default function RequestsPage() {
   const { t, lang } = useI18n();
   const { submitRequest, user } = useStore();
+  const nav = useNavigate();
+  useEffect(() => { if (!user) nav("/login?next=/requests"); }, [user, nav]);
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState("");
+  if (!user) return null;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
