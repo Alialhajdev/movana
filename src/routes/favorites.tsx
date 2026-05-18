@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { SeriesCard } from "@/components/SeriesCard";
 import { useI18n } from "@/lib/i18n";
@@ -6,7 +7,10 @@ import { useStore } from "@/lib/store";
 
 export default function FavoritesPage() {
   const { t, lang } = useI18n();
-  const { favorites, findSeries } = useStore();
+  const { favorites, findSeries, user } = useStore();
+  const nav = useNavigate();
+  useEffect(() => { if (!user) nav("/login?next=/favorites"); }, [user, nav]);
+  if (!user) return null;
   const list = favorites.map(findSeries).filter(Boolean);
 
   return (
