@@ -115,6 +115,15 @@ export interface Wallet {
   order: number;
 }
 
+export interface NavLinkItem {
+  id: string;
+  labelAr: string;
+  labelEn: string;
+  url: string;
+  active: boolean;
+  order: number;
+}
+
 export interface AdminUser {
   id: string;
   email: string | null;
