@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Film, ImageIcon, MessageSquare, Settings as SettingsIcon, ShoppingBag, Sparkles, Users, Wallet, CreditCard, Tag } from "lucide-react";
+import { BarChart3, Film, ImageIcon, MessageSquare, Settings as SettingsIcon, ShoppingBag, Sparkles, Users, Wallet, CreditCard, Tag, Navigation } from "lucide-react";
 import { Header, Footer } from "@/components/Layout";
 import { formatYER, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
