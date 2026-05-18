@@ -34,7 +34,7 @@ export function SeriesRow({ title, items, viewMoreTo }: Props) {
         <button
           aria-label="prev"
           onClick={() => scroll(-600)}
-          className="absolute start-2 top-1/2 z-20 hidden -translate-y-1/2 grid size-10 place-items-center rounded-full bg-black/70 text-white opacity-0 group-hover/row:opacity-100 md:grid hover:bg-primary transition"
+          className="absolute start-2 top-1/2 z-20 -translate-y-1/2 hidden md:grid size-10 place-items-center rounded-full bg-black/70 text-white opacity-0 group-hover/row:opacity-100 hover:bg-primary transition"
         >
           {dir === "rtl" ? <ChevronRight /> : <ChevronLeft />}
         </button>
@@ -49,7 +49,7 @@ export function SeriesRow({ title, items, viewMoreTo }: Props) {
         <button
           aria-label="next"
           onClick={() => scroll(600)}
-          className="absolute end-2 top-1/2 z-20 hidden -translate-y-1/2 grid size-10 place-items-center rounded-full bg-black/70 text-white opacity-0 group-hover/row:opacity-100 md:grid hover:bg-primary transition"
+          className="absolute end-2 top-1/2 z-20 -translate-y-1/2 hidden md:grid size-10 place-items-center rounded-full bg-black/70 text-white opacity-0 group-hover/row:opacity-100 hover:bg-primary transition"
         >
           {dir === "rtl" ? <ChevronLeft /> : <ChevronRight />}
         </button>
