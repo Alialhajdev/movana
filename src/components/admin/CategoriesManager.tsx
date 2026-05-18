@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2, Check, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Check, X, ArrowUp, ArrowDown } from "lucide-react";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 import { useStore, type CategoryItem } from "@/lib/store";
@@ -9,7 +9,8 @@ const empty: Draft = { id: "", nameAr: "", nameEn: "", active: true };
 
 export function CategoriesManager() {
   const { lang } = useI18n();
-  const { categories, addCategory, updateCategory, deleteCategory } = useStore();
+  const { categories, addCategory, updateCategory, deleteCategory, reorderCategory } = useStore();
+  const sorted = [...categories].sort((a, b) => a.order - b.order);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft>(empty);
   const [creating, setCreating] = useState(false);
@@ -88,7 +89,7 @@ export function CategoriesManager() {
               </tr>
             </thead>
             <tbody>
-              {categories.map((c) => (
+              {sorted.map((c, idx) => (
                 <tr key={c.id} className="border-t border-border">
                   <td className="p-3 font-mono text-xs">{c.id}</td>
                   <td className="p-3">{c.nameAr}</td>
@@ -100,6 +101,8 @@ export function CategoriesManager() {
                   </td>
                   <td className="p-3">
                     <div className="flex gap-1 justify-end">
+                      <button disabled={idx === 0} onClick={() => reorderCategory(c.id, "up")} className="inline-flex items-center rounded-md bg-white/5 hover:bg-white/10 px-2 py-1.5 text-xs disabled:opacity-30" title={lang === "ar" ? "أعلى" : "Up"}><ArrowUp className="size-3" /></button>
+                      <button disabled={idx === sorted.length - 1} onClick={() => reorderCategory(c.id, "down")} className="inline-flex items-center rounded-md bg-white/5 hover:bg-white/10 px-2 py-1.5 text-xs disabled:opacity-30" title={lang === "ar" ? "أسفل" : "Down"}><ArrowDown className="size-3" /></button>
                       <button onClick={() => startEdit(c)} className="inline-flex items-center gap-1 rounded-md bg-white/5 hover:bg-white/10 px-3 py-1.5 text-xs"><Pencil className="size-3" /> {lang === "ar" ? "تعديل" : "Edit"}</button>
                       <button onClick={() => { if (confirm(lang === "ar" ? "حذف؟" : "Delete?")) deleteCategory(c.id); }} className="inline-flex items-center gap-1 rounded-md bg-destructive/15 text-destructive hover:bg-destructive/30 px-3 py-1.5 text-xs"><Trash2 className="size-3" /> {lang === "ar" ? "حذف" : "Delete"}</button>
                     </div>

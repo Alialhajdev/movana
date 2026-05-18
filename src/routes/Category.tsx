@@ -11,7 +11,7 @@ const SPECIAL = new Set(["trending", "new", "top"]);
 export default function CategoryPage() {
   const { slug = "" } = useParams<{ slug: string }>();
   const { t, lang } = useI18n();
-  const { series: allSeries } = useStore();
+  const { series: allSeries, categories } = useStore();
   const [year, setYear] = useState<string>("all");
   const [minRating, setMinRating] = useState(0);
   const [sort, setSort] = useState<"new" | "rating" | "popular">("new");
@@ -38,9 +38,10 @@ export default function CategoryPage() {
     return base;
   }, [slug, q, year, minRating, sort, allSeries]);
 
+  const dynCat = categories.find((c) => c.id === slug);
   const title = SPECIAL.has(slug)
     ? slug === "trending" ? t("cat_trending") : slug === "new" ? t("cat_new") : t("cat_top")
-    : (categoryMeta[slug as Category]?.[lang] ?? slug);
+    : (dynCat ? (lang === "ar" ? dynCat.nameAr : dynCat.nameEn) : (categoryMeta[slug as Category]?.[lang] ?? slug));
 
   const years = Array.from(new Set(allSeries.map((s) => s.year))).sort((a, b) => b - a);
 
