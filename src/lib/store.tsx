@@ -837,6 +837,28 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setWallets((arr) => arr.filter((w) => w.id !== id));
     },
 
+    categories,
+    addCategory: async (c) => {
+      const sort_order = categories.length;
+      const { data, error } = await supabase.from("categories").insert({ id: c.id, name_ar: c.nameAr, name_en: c.nameEn, active: c.active ?? true, sort_order } as any).select("*").single();
+      if (error) return { error: error.message };
+      if (data) setCategories((arr) => [...arr, { id: data.id, nameAr: data.name_ar, nameEn: data.name_en, active: data.active, order: data.sort_order }]);
+      return { error: null };
+    },
+    updateCategory: async (id, patch) => {
+      const row: any = {};
+      if (patch.nameAr !== undefined) row.name_ar = patch.nameAr;
+      if (patch.nameEn !== undefined) row.name_en = patch.nameEn;
+      if (patch.active !== undefined) row.active = patch.active;
+      if (patch.order !== undefined) row.sort_order = patch.order;
+      const { data } = await supabase.from("categories").update(row).eq("id", id).select("*").single();
+      if (data) setCategories((arr) => arr.map((c) => c.id === id ? { id: data.id, nameAr: data.name_ar, nameEn: data.name_en, active: data.active, order: data.sort_order } : c));
+    },
+    deleteCategory: async (id) => {
+      await supabase.from("categories").delete().eq("id", id);
+      setCategories((arr) => arr.filter((c) => c.id !== id));
+    },
+
     listAdminUsers: async () => {
       const { data, error } = await supabase.functions.invoke("admin-users", { body: { action: "list" } });
       if (error || !data?.users) return [];
