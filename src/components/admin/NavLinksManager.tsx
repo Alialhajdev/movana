@@ -1,0 +1,123 @@
+import { useState } from "react";
+import { Plus, Pencil, Trash2, Check, X, ArrowUp, ArrowDown } from "lucide-react";
+import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
+import { useStore, type NavLinkItem } from "@/lib/store";
+
+type Draft = { labelAr: string; labelEn: string; url: string; active: boolean };
+const empty: Draft = { labelAr: "", labelEn: "", url: "/", active: true };
+
+export function NavLinksManager() {
+  const { lang } = useI18n();
+  const { navLinks, addNavLink, updateNavLink, deleteNavLink, reorderNavLink } = useStore();
+  const sorted = [...navLinks].sort((a, b) => a.order - b.order);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draft, setDraft] = useState<Draft>(empty);
+  const [creating, setCreating] = useState(false);
+
+  const startEdit = (n: NavLinkItem) => {
+    setEditingId(n.id);
+    setDraft({ labelAr: n.labelAr, labelEn: n.labelEn, url: n.url, active: n.active });
+    setCreating(false);
+  };
+  const cancel = () => { setEditingId(null); setCreating(false); setDraft(empty); };
+
+  const save = async () => {
+    if (!draft.labelAr.trim() || !draft.labelEn.trim() || !draft.url.trim()) {
+      toast.error(lang === "ar" ? "كل الحقول مطلوبة" : "All fields required");
+      return;
+    }
+    if (creating) {
+      const { error } = await addNavLink({ labelAr: draft.labelAr.trim(), labelEn: draft.labelEn.trim(), url: draft.url.trim(), active: draft.active });
+      if (error) { toast.error(error); return; }
+      toast.success(lang === "ar" ? "تمت الإضافة" : "Added");
+    } else if (editingId) {
+      await updateNavLink(editingId, { labelAr: draft.labelAr, labelEn: draft.labelEn, url: draft.url, active: draft.active });
+      toast.success(lang === "ar" ? "تم الحفظ" : "Saved");
+    }
+    cancel();
+  };
+
+  return (
+    <div className="glass rounded-2xl p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-bold">{lang === "ar" ? "إدارة شريط التنقل" : "Navigation Bar"}</h3>
+        <button onClick={() => { setCreating(true); setEditingId(null); setDraft(empty); }} className="inline-flex items-center gap-2 rounded-md gradient-red text-primary-foreground px-3 py-2 text-sm font-bold">
+          <Plus className="size-4" /> {lang === "ar" ? "إضافة رابط" : "Add link"}
+        </button>
+      </div>
+
+      {(creating || editingId) && (
+        <div className="rounded-xl bg-input/40 p-4 mb-4 grid sm:grid-cols-[1fr_1fr_1.2fr_auto_auto] gap-3 items-end">
+          <div>
+            <label className="text-xs text-muted-foreground">{lang === "ar" ? "النص بالعربي" : "Arabic label"}</label>
+            <input value={draft.labelAr} onChange={(e) => setDraft({ ...draft, labelAr: e.target.value })} className="mt-1 w-full h-10 rounded-md bg-background border border-border px-3" placeholder="الرئيسية" />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">{lang === "ar" ? "النص بالإنجليزي" : "English label"}</label>
+            <input value={draft.labelEn} onChange={(e) => setDraft({ ...draft, labelEn: e.target.value })} className="mt-1 w-full h-10 rounded-md bg-background border border-border px-3" placeholder="Home" />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">{lang === "ar" ? "الرابط" : "URL"}</label>
+            <input value={draft.url} onChange={(e) => setDraft({ ...draft, url: e.target.value })} className="mt-1 w-full h-10 rounded-md bg-background border border-border px-3 font-mono text-sm" placeholder="/category/korean" />
+          </div>
+          <label className="inline-flex items-center gap-2 text-sm h-10">
+            <input type="checkbox" checked={draft.active} onChange={(e) => setDraft({ ...draft, active: e.target.checked })} />
+            {lang === "ar" ? "مفعّل" : "Active"}
+          </label>
+          <div className="flex gap-2">
+            <button onClick={save} className="rounded-md gradient-red text-primary-foreground px-3 h-10 text-sm font-bold">{lang === "ar" ? "حفظ" : "Save"}</button>
+            <button onClick={cancel} className="rounded-md bg-secondary px-3 h-10 text-sm">{lang === "ar" ? "إلغاء" : "Cancel"}</button>
+          </div>
+        </div>
+      )}
+
+      {navLinks.length === 0 ? (
+        <p className="p-10 text-center text-muted-foreground">{lang === "ar" ? "لا توجد روابط" : "No links"}</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="text-muted-foreground text-xs uppercase">
+              <tr>
+                <th className="text-start p-3">{lang === "ar" ? "عربي" : "Arabic"}</th>
+                <th className="text-start p-3">{lang === "ar" ? "إنجليزي" : "English"}</th>
+                <th className="text-start p-3">{lang === "ar" ? "الرابط" : "URL"}</th>
+                <th className="text-start p-3">{lang === "ar" ? "الحالة" : "Status"}</th>
+                <th className="p-3" />
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map((n, idx) => (
+                <tr key={n.id} className="border-t border-border">
+                  <td className="p-3">{n.labelAr}</td>
+                  <td className="p-3">{n.labelEn}</td>
+                  <td className="p-3 font-mono text-xs text-muted-foreground">{n.url}</td>
+                  <td className="p-3">
+                    <button
+                      onClick={() => updateNavLink(n.id, { active: !n.active })}
+                      className={n.active
+                        ? "inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 px-2.5 py-1 text-xs font-medium transition"
+                        : "inline-flex items-center gap-1 rounded-full bg-white/5 text-muted-foreground hover:bg-white/10 px-2.5 py-1 text-xs font-medium transition"}
+                    >
+                      {n.active
+                        ? <><Check className="size-3" /> {lang === "ar" ? "مفعّل" : "Active"}</>
+                        : <><X className="size-3" /> {lang === "ar" ? "متوقف" : "Hidden"}</>}
+                    </button>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex gap-1 justify-end">
+                      <button disabled={idx === 0} onClick={() => reorderNavLink(n.id, "up")} className="inline-flex items-center rounded-md bg-white/5 hover:bg-white/10 px-2 py-1.5 text-xs disabled:opacity-30"><ArrowUp className="size-3" /></button>
+                      <button disabled={idx === sorted.length - 1} onClick={() => reorderNavLink(n.id, "down")} className="inline-flex items-center rounded-md bg-white/5 hover:bg-white/10 px-2 py-1.5 text-xs disabled:opacity-30"><ArrowDown className="size-3" /></button>
+                      <button onClick={() => startEdit(n)} className="inline-flex items-center gap-1 rounded-md bg-white/5 hover:bg-white/10 px-3 py-1.5 text-xs"><Pencil className="size-3" /> {lang === "ar" ? "تعديل" : "Edit"}</button>
+                      <button onClick={() => { if (confirm(lang === "ar" ? "حذف؟" : "Delete?")) deleteNavLink(n.id); }} className="inline-flex items-center gap-1 rounded-md bg-destructive/15 text-destructive hover:bg-destructive/30 px-3 py-1.5 text-xs"><Trash2 className="size-3" /> {lang === "ar" ? "حذف" : "Delete"}</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
