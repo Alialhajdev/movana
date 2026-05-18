@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { formatYER, useI18n } from "@/lib/i18n";
@@ -6,7 +7,10 @@ import { useStore } from "@/lib/store";
 
 export default function CartPage() {
   const { t, lang } = useI18n();
-  const { cart, setQty, removeFromCart, cartTotal, findSeries } = useStore();
+  const { cart, setQty, removeFromCart, cartTotal, findSeries, user } = useStore();
+  const nav = useNavigate();
+  useEffect(() => { if (!user) nav("/login?next=/cart"); }, [user, nav]);
+  if (!user) return null;
 
   return (
     <>

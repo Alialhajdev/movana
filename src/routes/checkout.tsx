@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Upload, Wallet, Truck, CreditCard } from "lucide-react";
+import { Upload, Wallet, Truck } from "lucide-react";
 import { Header, Footer, MobileBottomNav } from "@/components/Layout";
 import { Steps } from "./cart";
 import { AddressManager } from "@/components/AddressManager";
@@ -13,7 +13,7 @@ export default function CheckoutPage() {
   const { t, lang } = useI18n();
   const { cart, cartTotal, user, placeOrder, findSeries, addresses, wallets } = useStore();
   const nav = useNavigate();
-  const [method, setMethod] = useState<Order["paymentMethod"]>("wallet_transfer");
+  const [method, setMethod] = useState<Order["paymentMethod"]>("wallet");
   const [receipt, setReceipt] = useState<string>();
   const [selected, setSelected] = useState<Address | null>(null);
 
@@ -43,8 +43,7 @@ export default function CheckoutPage() {
   };
 
   const methods = [
-    { id: "wallet_transfer" as const, label: t("pay_wallet_transfer"), icon: <Wallet className="size-5" /> },
-    { id: "wallet" as const, label: t("pay_wallet"), icon: <CreditCard className="size-5" /> },
+    { id: "wallet" as const, label: t("pay_wallet"), icon: <Wallet className="size-5" /> },
     { id: "cod" as const, label: t("pay_cod"), icon: <Truck className="size-5" /> },
   ];
 
@@ -61,8 +60,7 @@ export default function CheckoutPage() {
 
             <div className="glass rounded-2xl p-5">
               <h3 className="font-bold mb-4">{t("pay_method")}</h3>
-              <div className="grid sm:grid-cols-3 gap-3">
-                {methods.map((m) => (
+              <div className="grid sm:grid-cols-2 gap-3">{methods.map((m) => (
                   <label
                     key={m.id}
                     className={cn(
@@ -78,7 +76,7 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {(method === "wallet_transfer" || method === "wallet") && (
+            {method === "wallet" && (
               <div className="glass rounded-2xl p-5 space-y-4">
                 <h3 className="font-bold">{t("pay_account")}</h3>
                 {wallets.filter((w) => w.active).length === 0 ? (
