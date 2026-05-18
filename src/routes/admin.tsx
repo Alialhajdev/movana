@@ -16,8 +16,9 @@ import { ReviewsManager } from "@/components/admin/ReviewsManager";
 import { WalletsManager } from "@/components/admin/WalletsManager";
 import { UsersManager } from "@/components/admin/UsersManager";
 import { CategoriesManager } from "@/components/admin/CategoriesManager";
+import { NavLinksManager } from "@/components/admin/NavLinksManager";
 
-type Tab = "dashboard" | "series" | "categories" | "offers" | "orders" | "payments" | "wallets" | "users" | "requests" | "reviews" | "slides" | "settings";
+type Tab = "dashboard" | "series" | "categories" | "navlinks" | "offers" | "orders" | "payments" | "wallets" | "users" | "requests" | "reviews" | "slides" | "settings";
 
 export default function AdminPage() {
   const { t, lang } = useI18n();
