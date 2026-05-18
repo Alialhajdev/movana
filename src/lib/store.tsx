@@ -90,6 +90,20 @@ export interface Settings {
   logoUrl?: string;
   themePreset: ThemePreset;
   themeMode: ThemeMode;
+  popupActive: boolean;
+  popupTitleAr?: string;
+  popupTitleEn?: string;
+  popupTextAr?: string;
+  popupTextEn?: string;
+  whatsappNumber?: string;
+}
+
+export interface CategoryItem {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  active: boolean;
+  order: number;
 }
 
 export interface Wallet {
