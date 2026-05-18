@@ -76,7 +76,7 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {(method === "wallet_transfer" || method === "wallet") && (
+            {method === "wallet" && (
               <div className="glass rounded-2xl p-5 space-y-4">
                 <h3 className="font-bold">{t("pay_account")}</h3>
                 {wallets.filter((w) => w.active).length === 0 ? (
