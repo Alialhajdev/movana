@@ -786,7 +786,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         logo_url: merged.logoUrl ?? null,
         theme_preset: merged.themePreset,
         theme_mode: merged.themeMode,
-      }).eq("id", 1);
+        popup_active: merged.popupActive,
+        popup_title_ar: merged.popupTitleAr ?? null,
+        popup_title_en: merged.popupTitleEn ?? null,
+        popup_text_ar: merged.popupTextAr ?? null,
+        popup_text_en: merged.popupTextEn ?? null,
+        whatsapp_number: merged.whatsappNumber ?? null,
+      } as any).eq("id", 1);
     },
 
     reviews,
