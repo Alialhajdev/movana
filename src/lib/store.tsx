@@ -203,6 +203,11 @@ interface Store {
   updateCategory: (id: string, patch: Partial<CategoryItem>) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
   reorderCategory: (id: string, dir: "up" | "down") => Promise<void>;
+  navLinks: NavLinkItem[];
+  addNavLink: (n: Omit<NavLinkItem, "id" | "order">) => Promise<{ error: string | null }>;
+  updateNavLink: (id: string, patch: Partial<NavLinkItem>) => Promise<void>;
+  deleteNavLink: (id: string) => Promise<void>;
+  reorderNavLink: (id: string, dir: "up" | "down") => Promise<void>;
   listAdminUsers: () => Promise<AdminUser[]>;
   deleteAdminUser: (id: string) => Promise<{ error: string | null }>;
   resetAdminUserPassword: (email: string) => Promise<{ error: string | null; link?: string | null }>;
