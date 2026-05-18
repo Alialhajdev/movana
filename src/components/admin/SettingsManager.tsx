@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { Image as ImageIcon, Sun, Moon } from "lucide-react";
+import { Image as ImageIcon, Sun, Moon, MessageCircle, Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { useI18n } from "@/lib/i18n";
 import { useStore, THEME_PRESETS, THEME_PRESET_SWATCH, type ThemePreset, type ThemeMode } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -12,6 +14,12 @@ export function SettingsManager() {
   const { settings, updateSettings } = useStore();
   const [logoText, setLogoText] = useState(settings.logoText);
   const [logoUrl, setLogoUrl] = useState(settings.logoUrl ?? "");
+  const [whatsapp, setWhatsapp] = useState(settings.whatsappNumber ?? "");
+  const [popupActive, setPopupActive] = useState(!!settings.popupActive);
+  const [popupTitleAr, setPopupTitleAr] = useState(settings.popupTitleAr ?? "");
+  const [popupTitleEn, setPopupTitleEn] = useState(settings.popupTitleEn ?? "");
+  const [popupTextAr, setPopupTextAr] = useState(settings.popupTextAr ?? "");
+  const [popupTextEn, setPopupTextEn] = useState(settings.popupTextEn ?? "");
 
   const save = () => {
     updateSettings({ logoText: logoText.trim() || "MOVANA", logoUrl: logoUrl.trim() || undefined });
