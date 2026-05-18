@@ -13,7 +13,7 @@ export default function CheckoutPage() {
   const { t, lang } = useI18n();
   const { cart, cartTotal, user, placeOrder, findSeries, addresses, wallets } = useStore();
   const nav = useNavigate();
-  const [method, setMethod] = useState<Order["paymentMethod"]>("wallet_transfer");
+  const [method, setMethod] = useState<Order["paymentMethod"]>("wallet");
   const [receipt, setReceipt] = useState<string>();
   const [selected, setSelected] = useState<Address | null>(null);
 
