@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 export function Header() {
   const { t, lang, toggle } = useI18n();
-  const { user, cartCount, logout, settings } = useStore();
+  const { user, cartCount, logout, settings, navLinks } = useStore();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
