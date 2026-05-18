@@ -193,6 +193,7 @@ interface Store {
   addCategory: (c: Omit<CategoryItem, "order">) => Promise<{ error: string | null }>;
   updateCategory: (id: string, patch: Partial<CategoryItem>) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
+  reorderCategory: (id: string, dir: "up" | "down") => Promise<void>;
   listAdminUsers: () => Promise<AdminUser[]>;
   deleteAdminUser: (id: string) => Promise<{ error: string | null }>;
   resetAdminUserPassword: (email: string) => Promise<{ error: string | null; link?: string | null }>;
