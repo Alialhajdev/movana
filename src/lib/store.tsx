@@ -857,7 +857,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     deleteCategory: async (id) => {
       await supabase.from("categories").delete().eq("id", id);
-      setCategories((arr) => arr.filter((c) => c.id !== id));
+      setCategories((arr) => arr.filter((c) => c.id !== id).map((c, i) => ({ ...c, order: i })));
+    },
+    reorderCategory: async (id, dir) => {
+      const sorted = [...categories].sort((a, b) => a.order - b.order);
+      const i = sorted.findIndex((c) => c.id === id);
+      const j = dir === "up" ? i - 1 : i + 1;
+      if (i < 0 || j < 0 || j >= sorted.length) return;
+      const a = sorted[i], b = sorted[j];
+      const next = sorted.map((c) => c.id === a.id ? { ...c, order: b.order } : c.id === b.id ? { ...c, order: a.order } : c);
+      setCategories(next);
+      await Promise.all([
+        supabase.from("categories").update({ sort_order: b.order }).eq("id", a.id),
+        supabase.from("categories").update({ sort_order: a.order }).eq("id", b.id),
+      ]);
     },
 
     listAdminUsers: async () => {
