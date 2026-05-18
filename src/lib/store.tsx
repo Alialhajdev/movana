@@ -379,6 +379,12 @@ const mapSettings = (r: any): Settings => ({
   logoUrl: r.logo_url ?? undefined,
   themePreset: (r.theme_preset ?? "red") as ThemePreset,
   themeMode: (r.theme_mode ?? "dark") as ThemeMode,
+  popupActive: !!r.popup_active,
+  popupTitleAr: r.popup_title_ar ?? undefined,
+  popupTitleEn: r.popup_title_en ?? undefined,
+  popupTextAr: r.popup_text_ar ?? undefined,
+  popupTextEn: r.popup_text_en ?? undefined,
+  whatsappNumber: r.whatsapp_number ?? undefined,
 });
 
 // ---------- Theme application ----------
