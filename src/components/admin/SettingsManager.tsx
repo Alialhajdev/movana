@@ -54,6 +54,72 @@ export function SettingsManager() {
       </div>
 
       <div className="glass rounded-2xl p-5 space-y-4">
+        <h3 className="font-bold flex items-center gap-2">
+          <MessageCircle className="size-4 text-primary" />
+          {lang === "ar" ? "رقم واتساب للتواصل" : "WhatsApp contact number"}
+        </h3>
+        <Input
+          value={whatsapp}
+          onChange={(e) => setWhatsapp(e.target.value)}
+          placeholder="+967xxxxxxxxx"
+          dir="ltr"
+        />
+        <p className="text-xs text-muted-foreground">
+          {lang === "ar" ? "أدخل الرقم بصيغة دولية مع رمز الدولة." : "Use international format including country code."}
+        </p>
+        <Button
+          className="gradient-red"
+          onClick={() => { updateSettings({ whatsappNumber: whatsapp.trim() || undefined }); toast.success(t("saved")); }}
+        >
+          {t("save")}
+        </Button>
+      </div>
+
+      <div className="glass rounded-2xl p-5 space-y-4">
+        <h3 className="font-bold flex items-center gap-2">
+          <Megaphone className="size-4 text-primary" />
+          {lang === "ar" ? "نافذة الترحيب المنبثقة" : "Welcome popup"}
+        </h3>
+        <label className="flex items-center justify-between gap-3 rounded-md bg-white/5 px-3 py-2">
+          <span className="text-sm">{lang === "ar" ? "إظهار النافذة" : "Show popup"}</span>
+          <Switch checked={popupActive} onCheckedChange={setPopupActive} />
+        </label>
+        <div className="grid md:grid-cols-2 gap-3">
+          <label className="block">
+            <span className="text-xs text-muted-foreground mb-1 block">{lang === "ar" ? "العنوان (عربي)" : "Title (Arabic)"}</span>
+            <Input value={popupTitleAr} onChange={(e) => setPopupTitleAr(e.target.value)} />
+          </label>
+          <label className="block">
+            <span className="text-xs text-muted-foreground mb-1 block">{lang === "ar" ? "العنوان (إنجليزي)" : "Title (English)"}</span>
+            <Input value={popupTitleEn} onChange={(e) => setPopupTitleEn(e.target.value)} />
+          </label>
+          <label className="block">
+            <span className="text-xs text-muted-foreground mb-1 block">{lang === "ar" ? "النص (عربي)" : "Text (Arabic)"}</span>
+            <Textarea rows={4} value={popupTextAr} onChange={(e) => setPopupTextAr(e.target.value)} />
+          </label>
+          <label className="block">
+            <span className="text-xs text-muted-foreground mb-1 block">{lang === "ar" ? "النص (إنجليزي)" : "Text (English)"}</span>
+            <Textarea rows={4} value={popupTextEn} onChange={(e) => setPopupTextEn(e.target.value)} />
+          </label>
+        </div>
+        <Button
+          className="gradient-red"
+          onClick={() => {
+            updateSettings({
+              popupActive,
+              popupTitleAr: popupTitleAr.trim() || undefined,
+              popupTitleEn: popupTitleEn.trim() || undefined,
+              popupTextAr: popupTextAr.trim() || undefined,
+              popupTextEn: popupTextEn.trim() || undefined,
+            });
+            toast.success(t("saved"));
+          }}
+        >
+          {t("save")}
+        </Button>
+      </div>
+
+      <div className="glass rounded-2xl p-5 space-y-4">
         <h3 className="font-bold">{t("theme_preset")}</h3>
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
           {THEME_PRESETS.map((p) => (
