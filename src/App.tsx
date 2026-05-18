@@ -12,25 +12,33 @@ import Profile from "./routes/profile";
 import Requests from "./routes/requests";
 import Search from "./routes/search";
 import Admin from "./routes/admin";
+import { ScrollToTop } from "./components/ScrollToTop";
+import { WelcomePopup } from "./components/WelcomePopup";
+import { WhatsAppFab } from "./components/WhatsAppFab";
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/category/:slug" element={<Category />} />
-      <Route path="/series/:id" element={<SeriesDetail />} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/checkout" element={<Checkout />} />
-      <Route path="/order-confirm/:id" element={<OrderConfirm />} />
-      <Route path="/favorites" element={<Favorites />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/requests" element={<Requests />} />
-      <Route path="/search" element={<Search />} />
-      <Route path="/admin" element={<Admin />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/category/:slug" element={<Category />} />
+        <Route path="/series/:id" element={<SeriesDetail />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-confirm/:id" element={<OrderConfirm />} />
+        <Route path="/favorites" element={<Favorites />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/requests" element={<Requests />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <WelcomePopup />
+      <WhatsAppFab />
+    </>
   );
 }
 
