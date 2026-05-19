@@ -45,9 +45,7 @@ export default function LoginPage() {
             <div className="text-center text-xs text-muted-foreground">
               {t("no_account")} <Link to="/register" className="text-primary font-bold">{t("nav_register")}</Link>
             </div>
-            <p className="text-center text-[10px] text-muted-foreground">
-              {lang === "ar" ? "" : ""}
-            </p>
+
           </form>
         </div>
       </main>
