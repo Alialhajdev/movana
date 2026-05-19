@@ -20,7 +20,7 @@ export default function RegisterPage() {
     e.preventDefault();
     if (!name || !email || !password) return;
     setBusy(true);
-    const { error } = await signUp(email, password, name);
+    const { error } = await signUp(email, password, name, phone);
     setBusy(false);
     if (error) {
       toast.error(error);

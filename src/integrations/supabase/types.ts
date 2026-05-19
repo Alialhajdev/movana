@@ -274,6 +274,7 @@ export type Database = {
           email: string | null
           id: string
           name: string | null
+          phone: string | null
           updated_at: string
         }
         Insert: {
@@ -282,6 +283,7 @@ export type Database = {
           email?: string | null
           id: string
           name?: string | null
+          phone?: string | null
           updated_at?: string
         }
         Update: {
@@ -290,6 +292,7 @@ export type Database = {
           email?: string | null
           id?: string
           name?: string | null
+          phone?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -604,6 +607,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_email_by_phone: { Args: { _phone: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
