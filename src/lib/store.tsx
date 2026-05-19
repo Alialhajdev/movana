@@ -561,16 +561,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const cartCount = useMemo(() => cart.reduce((s, i) => s + i.qty, 0), [cart]);
 
   // ---------- Auth actions ----------
-  const signIn: Store["signIn"] = async (email, password) => {
+  const signIn: Store["signIn"] = async (identifier, password) => {
+    let email = identifier.trim();
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!isEmail) {
+      const phone = email.replace(/\s+/g, "");
+      const { data, error: rpcErr } = await supabase.rpc("get_email_by_phone", { _phone: phone });
+      if (rpcErr) return { error: rpcErr.message };
+      if (!data) return { error: "No account found for this phone number" };
+      email = data as string;
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
   };
-  const signUp: Store["signUp"] = async (email, password, name) => {
+  const signUp: Store["signUp"] = async (email, password, name, phone) => {
     const redirect = `${window.location.origin}/`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: redirect, data: { name } },
+      options: { emailRedirectTo: redirect, data: { name, phone: phone?.replace(/\s+/g, "") || "" } },
     });
     return { error: error?.message ?? null };
   };
