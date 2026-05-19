@@ -37,7 +37,7 @@ export default function LoginPage() {
           <h1 className="font-display text-4xl text-center">{t("nav_login")}</h1>
           <p className="text-center text-muted-foreground mt-2 text-sm">{lang === "ar" ? "ادخل بريدك للمتابعة" : "Sign in to continue"}</p>
           <form onSubmit={submit} className="mt-6 space-y-4">
-            <Field label={t("email")} type="email" value={email} onChange={setEmail} required />
+            <Field label={lang === "ar" ? "البريد أو رقم الهاتف" : "Email or phone"} type="text" value={identifier} onChange={setIdentifier} required />
             <Field label={t("password")} type="password" value={password} onChange={setPassword} required />
             <button disabled={busy} className="w-full rounded-md gradient-red py-3 font-bold shadow-glow disabled:opacity-60">
               {busy ? "…" : t("nav_login")}
