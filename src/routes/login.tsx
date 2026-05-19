@@ -11,15 +11,15 @@ export default function LoginPage() {
   const nav = useNavigate();
   const [sp] = useSearchParams();
   const next = sp.get("next") || "/";
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
+    if (!identifier || !password) return;
     setBusy(true);
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(identifier, password);
     setBusy(false);
     if (error) {
       toast.error(error);
