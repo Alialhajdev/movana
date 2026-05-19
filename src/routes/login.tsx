@@ -46,7 +46,7 @@ export default function LoginPage() {
               {t("no_account")} <Link to="/register" className="text-primary font-bold">{t("nav_register")}</Link>
             </div>
             <p className="text-center text-[10px] text-muted-foreground">
-              {lang === "ar" ? "أول حساب يتم تسجيله يصبح المسؤول تلقائياً" : "The first registered account automatically becomes admin"}
+              {lang === "ar" ? "" : ""}
             </p>
           </form>
         </div>
