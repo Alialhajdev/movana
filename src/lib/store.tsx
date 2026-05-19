@@ -147,8 +147,8 @@ export interface Review {
 interface Store {
   user: User | null;
   authLoading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUp: (email: string, password: string, name: string) => Promise<{ error: string | null }>;
+  signIn: (identifier: string, password: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, name: string, phone?: string) => Promise<{ error: string | null }>;
   logout: () => Promise<void>;
   cart: CartItem[];
   addToCart: (id: string, qty?: number) => void;
