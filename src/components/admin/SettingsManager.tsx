@@ -15,6 +15,8 @@ export function SettingsManager() {
   const { settings, updateSettings } = useStore();
   const [logoText, setLogoText] = useState(settings.logoText);
   const [logoUrl, setLogoUrl] = useState(settings.logoUrl ?? "");
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [whatsapp, setWhatsapp] = useState(settings.whatsappNumber ?? "");
   const [popupActive, setPopupActive] = useState(!!settings.popupActive);
   const [popupTitleAr, setPopupTitleAr] = useState(settings.popupTitleAr ?? "");
@@ -27,6 +29,53 @@ export function SettingsManager() {
     toast.success(t("saved"));
   };
 
+  const optimizeImage = (file: File): Promise<Blob> =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = () => { img.src = reader.result as string; };
+      reader.onerror = reject;
+      img.onload = () => {
+        // Header logo renders at h-8 (32px). Use 2x for retina = 64px height.
+        const targetH = 64;
+        const ratio = img.width / img.height;
+        const w = Math.round(targetH * ratio);
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = targetH;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("Canvas not supported"));
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, 0, 0, w, targetH);
+        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Blob failed"))), "image/png", 0.92);
+      };
+      img.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const uploadLogo = async (file: File) => {
+    setUploading(true);
+    try {
+      const blob = await optimizeImage(file);
+      const path = `logos/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.png`;
+      const { error } = await supabase.storage.from("series-images").upload(path, blob, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: "image/png",
+      });
+      if (error) throw error;
+      const { data } = supabase.storage.from("series-images").getPublicUrl(path);
+      setLogoUrl(data.publicUrl);
+      updateSettings({ logoText: logoText.trim() || "MOVANA", logoUrl: data.publicUrl });
+      toast.success(t("saved"));
+    } catch (e: any) {
+      toast.error(e.message ?? "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-bold">{t("admin_settings")}</h2>
@@ -36,6 +85,11 @@ export function SettingsManager() {
           <ImageIcon className="size-4 text-primary" />
           {t("site_logo")}
         </h3>
+        <p className="text-xs text-muted-foreground">
+          {lang === "ar"
+            ? "اختر إما صورة شعار أو نصاً. عند رفع صورة سيتم استخدامها بدلاً من النص."
+            : "Use either an image logo or a text logo. If an image is set, it replaces the text."}
+        </p>
         <div className="grid md:grid-cols-2 gap-3">
           <label className="block">
             <span className="text-xs text-muted-foreground mb-1 block">{t("logo_text")}</span>
@@ -46,10 +100,34 @@ export function SettingsManager() {
             <Input value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://..." />
           </label>
         </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadLogo(f); e.target.value = ""; }}
+          />
+          <Button type="button" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
+            {uploading ? <Loader2 className="size-4 me-2 animate-spin" /> : <Upload className="size-4 me-2" />}
+            {lang === "ar" ? "رفع صورة الشعار" : "Upload logo image"}
+          </Button>
+          {logoUrl && (
+            <Button type="button" variant="ghost" onClick={() => { setLogoUrl(""); updateSettings({ logoText: logoText.trim() || "MOVANA", logoUrl: undefined }); toast.success(t("saved")); }}>
+              <X className="size-4 me-2" />
+              {lang === "ar" ? "إزالة الصورة" : "Remove image"}
+            </Button>
+          )}
+        </div>
         <div className="rounded-lg bg-input p-4 flex items-center gap-3">
           <span className="text-xs text-muted-foreground">{t("preview")}:</span>
-          {logoUrl && <img src={logoUrl} alt="logo" className="h-10 w-auto object-contain" />}
-          <span className="font-display text-2xl tracking-wider text-primary">{logoText || "MOVANA"}</span>
+          <div className="flex items-center font-display text-2xl tracking-wider text-primary leading-none">
+            {logoUrl ? (
+              <img src={logoUrl} alt="logo" className="h-8 w-auto object-contain block" />
+            ) : (
+              <span>{logoText || "MOVANA"}</span>
+            )}
+          </div>
         </div>
         <Button className="gradient-red" onClick={save}>{t("save")}</Button>
       </div>
