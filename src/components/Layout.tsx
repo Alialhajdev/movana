@@ -50,9 +50,12 @@ export function Header() {
       )}
     >
       <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-4 px-4 md:px-10">
-        <Link to="/" className="flex items-center gap-2 font-display text-2xl tracking-wider text-primary">
-          {settings.logoUrl && <img src={settings.logoUrl} alt={settings.logoText} className="h-8 w-auto object-contain" />}
-          <span>{settings.logoText}</span>
+        <Link to="/" className="flex items-center font-display text-2xl tracking-wider text-primary leading-none">
+          {settings.logoUrl ? (
+            <img src={settings.logoUrl} alt={settings.logoText} className="h-8 w-auto object-contain block" />
+          ) : (
+            <span>{settings.logoText}</span>
+          )}
         </Link>
 
         <nav className="hidden lg:flex items-center gap-5 text-sm">
