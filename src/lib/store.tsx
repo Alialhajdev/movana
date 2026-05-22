@@ -85,9 +85,11 @@ export interface Slide {
 export type ThemePreset = "red" | "gold" | "blue" | "emerald" | "violet" | "rose";
 export type ThemeMode = "dark" | "light";
 
+export type LogoSize = "sm" | "md" | "lg" | "xl";
 export interface Settings {
   logoText: string;
   logoUrl?: string;
+  logoSize: LogoSize;
   themePreset: ThemePreset;
   themeMode: ThemeMode;
   popupActive: boolean;
