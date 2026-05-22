@@ -119,11 +119,49 @@ export function SettingsManager() {
             </Button>
           )}
         </div>
+        <div>
+          <span className="text-xs text-muted-foreground mb-2 block">
+            {lang === "ar" ? "حجم الشعار" : "Logo size"}
+          </span>
+          <div className="grid grid-cols-4 gap-2">
+            {(["sm", "md", "lg", "xl"] as LogoSize[]).map((sz) => {
+              const labels: Record<LogoSize, { ar: string; en: string }> = {
+                sm: { ar: "صغير", en: "Small" },
+                md: { ar: "متوسط", en: "Medium" },
+                lg: { ar: "كبير", en: "Large" },
+                xl: { ar: "كبير جداً", en: "Extra Large" },
+              };
+              return (
+                <button
+                  key={sz}
+                  type="button"
+                  onClick={() => { updateSettings({ logoSize: sz }); toast.success(t("saved")); }}
+                  className={cn(
+                    "rounded-md border-2 px-3 py-2 text-xs font-bold transition",
+                    settings.logoSize === sz ? "border-primary bg-primary/10 text-primary" : "border-border hover:border-primary/50"
+                  )}
+                >
+                  {lang === "ar" ? labels[sz].ar : labels[sz].en}
+                </button>
+              );
+            })}
+          </div>
+        </div>
         <div className="rounded-lg bg-input p-4 flex items-center gap-3">
           <span className="text-xs text-muted-foreground">{t("preview")}:</span>
           <div className="flex items-center font-display text-2xl tracking-wider text-primary leading-none">
             {logoUrl ? (
-              <img src={logoUrl} alt="logo" className="h-12 w-auto object-contain block" />
+              <img
+                src={logoUrl}
+                alt="logo"
+                className={cn(
+                  "w-auto object-contain block",
+                  settings.logoSize === "sm" && "h-8",
+                  settings.logoSize === "md" && "h-12",
+                  settings.logoSize === "lg" && "h-16",
+                  settings.logoSize === "xl" && "h-20",
+                )}
+              />
             ) : (
               <span>{logoText || "MOVANA"}</span>
             )}
