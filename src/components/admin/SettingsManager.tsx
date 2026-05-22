@@ -36,8 +36,8 @@ export function SettingsManager() {
       reader.onload = () => { img.src = reader.result as string; };
       reader.onerror = reject;
       img.onload = () => {
-        // Header logo renders at h-8 (32px). Use 2x for retina = 64px height.
-        const targetH = 64;
+        // Header logo renders at h-12 (48px). Use 2x for retina = 96px height.
+        const targetH = 96;
         const ratio = img.width / img.height;
         const w = Math.round(targetH * ratio);
         const canvas = document.createElement("canvas");
