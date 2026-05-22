@@ -36,8 +36,8 @@ export function SettingsManager() {
       reader.onload = () => { img.src = reader.result as string; };
       reader.onerror = reject;
       img.onload = () => {
-        // Optimize to a max of 256px height (2x of XL=128). Preserves quality across all sizes.
-        const targetH = Math.min(256, img.height);
+        // Optimize to a max of 512px height (2x of XL=176 + headroom). Crisp at every size.
+        const targetH = Math.min(512, img.height);
         const ratio = img.width / img.height;
         const w = Math.round(targetH * ratio);
         const canvas = document.createElement("canvas");
