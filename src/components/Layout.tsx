@@ -184,7 +184,17 @@ export function Footer() {
         <div>
           <div className="flex items-center font-display text-2xl text-primary leading-none">
             {settings.logoUrl ? (
-              <img src={settings.logoUrl} alt={settings.logoText} className="h-12 w-auto object-contain block" />
+              <img
+                src={settings.logoUrl}
+                alt={settings.logoText}
+                className={cn(
+                  "w-auto object-contain block",
+                  settings.logoSize === "sm" && "h-10",
+                  settings.logoSize === "md" && "h-14",
+                  settings.logoSize === "lg" && "h-20",
+                  settings.logoSize === "xl" && "h-24",
+                )}
+              />
             ) : (
               <span>{settings.logoText}</span>
             )}
