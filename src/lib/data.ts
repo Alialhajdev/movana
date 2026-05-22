@@ -11,6 +11,7 @@ export interface Series {
   imdb: number;
   seasons: number;
   episodes: number;
+  sizeGb: number;
   source: string;
   posterColor: string; // gradient seed (fallback)
   posterImage?: string;
