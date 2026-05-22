@@ -400,6 +400,7 @@ const mapReview = (r: any): Review => ({
 const mapSettings = (r: any): Settings => ({
   logoText: r.logo_text ?? "MOVANA",
   logoUrl: r.logo_url ?? undefined,
+  logoSize: (r.logo_size ?? "md") as LogoSize,
   themePreset: (r.theme_preset ?? "red") as ThemePreset,
   themeMode: (r.theme_mode ?? "dark") as ThemeMode,
   popupActive: !!r.popup_active,
