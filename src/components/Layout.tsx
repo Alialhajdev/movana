@@ -189,10 +189,10 @@ export function Footer() {
                 alt={settings.logoText}
                 className={cn(
                   "w-auto object-contain block",
-                  settings.logoSize === "sm" && "h-10",
-                  settings.logoSize === "md" && "h-14",
-                  settings.logoSize === "lg" && "h-20",
-                  settings.logoSize === "xl" && "h-24",
+                  settings.logoSize === "sm" && "h-20",
+                  settings.logoSize === "md" && "h-28",
+                  settings.logoSize === "lg" && "h-36",
+                  settings.logoSize === "xl" && "h-44",
                 )}
               />
             ) : (
