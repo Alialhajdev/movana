@@ -88,14 +88,14 @@ export default function SeriesDetail() {
     <>
       <Header />
       <main className="pb-24 md:pb-12">
-        <section className="relative h-[80vh] min-h-[560px] w-full overflow-hidden">
+        <section className="relative min-h-[80vh] w-full overflow-hidden pb-12">
           {s.backgroundImage ? (
             <img src={s.backgroundImage} alt="" className="absolute inset-0 size-full object-cover object-top" />
           ) : (
             <div className={cn("absolute inset-0 bg-gradient-to-br animate-ken-burns", s.posterColor)} />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
-          <div className="relative z-10 mx-auto flex h-full max-w-[1600px] items-end px-4 md:px-10 pb-12">
+          <div className="relative z-10 mx-auto flex h-full max-w-[1600px] items-start px-4 md:px-10 pt-[50vh]">
             <div className="max-w-3xl">
               <Link to={`/category/${s.category}`} className="inline-block rounded-full gradient-red px-3 py-1 text-xs font-bold uppercase tracking-wider">
                 {categoryMeta[s.category][lang]}
