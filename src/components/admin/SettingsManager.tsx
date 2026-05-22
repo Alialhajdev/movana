@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Image as ImageIcon, Sun, Moon, MessageCircle, Megaphone } from "lucide-react";
+import { Image as ImageIcon, Sun, Moon, MessageCircle, Megaphone, Upload, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { useI18n } from "@/lib/i18n";
 import { useStore, THEME_PRESETS, THEME_PRESET_SWATCH, type ThemePreset, type ThemeMode } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 export function SettingsManager() {
   const { t, lang } = useI18n();
