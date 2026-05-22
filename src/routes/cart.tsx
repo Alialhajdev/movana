@@ -35,7 +35,10 @@ export default function CartPage() {
                     <div className={`h-24 w-16 shrink-0 rounded-md bg-gradient-to-br ${s.posterColor}`} />
                     <div className="flex-1 min-w-0">
                       <Link to={`/series/${s.id}`} className="font-bold hover:text-primary line-clamp-1">{s.title[lang]}</Link>
-                      <p className="text-xs text-muted-foreground">{s.year} · {s.seasons} {t("seasons")}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {s.year} · {s.seasons} {t("seasons")} · {s.episodes} {t("episodes")}
+                        {s.sizeGb > 0 && <> · {s.sizeGb} {lang === "ar" ? "جيجابايت" : "GB"}</>}
+                      </p>
                       <p className="mt-1 text-primary font-bold">{formatYER(s.price, lang)}</p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -54,6 +57,18 @@ export default function CartPage() {
             <aside className="glass rounded-2xl p-5 h-fit sticky top-24">
               <h3 className="font-bold mb-4">{t("cart_subtotal")}</h3>
               <div className="flex justify-between text-sm text-muted-foreground"><span>{t("cart_subtotal")}</span><span>{formatYER(cartTotal, lang)}</span></div>
+              {(() => {
+                const totalSize = cart.reduce((sum, it) => {
+                  const s = findSeries(it.seriesId);
+                  return sum + (s ? (s.sizeGb || 0) * it.qty : 0);
+                }, 0);
+                return (
+                  <div className="mt-2 flex justify-between text-sm text-muted-foreground">
+                    <span>{lang === "ar" ? "إجمالي الحجم" : "Total size"}</span>
+                    <span>{totalSize.toFixed(1)} {lang === "ar" ? "جيجابايت" : "GB"}</span>
+                  </div>
+                );
+              })()}
               <div className="my-4 border-t border-border" />
               <div className="flex justify-between text-lg font-bold"><span>{t("cart_total")}</span><span className="text-primary">{formatYER(cartTotal, lang)}</span></div>
               <Link to="/checkout" className="mt-5 block text-center rounded-md gradient-red px-4 py-3 text-sm font-bold shadow-glow">{t("cart_checkout")}</Link>
