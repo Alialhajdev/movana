@@ -95,7 +95,7 @@ export default function SeriesDetail() {
             <div className={cn("absolute inset-0 bg-gradient-to-br animate-ken-burns", s.posterColor)} />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
-          <div className="relative z-10 mx-auto flex h-full max-w-[1600px] items-start px-4 md:px-10 pt-[50vh]">
+          <div className="relative z-10 mx-auto flex h-full max-w-[1600px] items-start px-4 md:px-10 pt-[65vh]">
             <div className="max-w-3xl">
               <Link to={`/category/${s.category}`} className="inline-block rounded-full gradient-red px-3 py-1 text-xs font-bold uppercase tracking-wider">
                 {categoryMeta[s.category][lang]}
