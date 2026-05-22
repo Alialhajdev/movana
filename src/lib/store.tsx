@@ -818,6 +818,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       await supabase.from("site_settings").update({
         logo_text: merged.logoText,
         logo_url: merged.logoUrl ?? null,
+        logo_size: merged.logoSize,
         theme_preset: merged.themePreset,
         theme_mode: merged.themeMode,
         popup_active: merged.popupActive,
