@@ -348,6 +348,7 @@ export type Database = {
           price: number
           related_ids: Json
           seasons: number
+          size_gb: number
           slug: string
           source: string
           title_ar: string
@@ -375,6 +376,7 @@ export type Database = {
           price?: number
           related_ids?: Json
           seasons?: number
+          size_gb?: number
           slug: string
           source?: string
           title_ar: string
@@ -402,6 +404,7 @@ export type Database = {
           price?: number
           related_ids?: Json
           seasons?: number
+          size_gb?: number
           slug?: string
           source?: string
           title_ar?: string

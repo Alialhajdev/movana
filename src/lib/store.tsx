@@ -237,6 +237,7 @@ const mapSeries = (r: any): Series => ({
   imdb: Number(r.imdb),
   seasons: r.seasons,
   episodes: r.episodes,
+  sizeGb: Number(r.size_gb ?? 0),
   source: r.source,
   posterColor: r.poster_color,
   posterImage: r.poster_image ?? undefined,
@@ -263,6 +264,7 @@ const seriesToRow = (s: Partial<Series> & { id?: string }) => ({
   imdb: s.imdb ?? 0,
   seasons: s.seasons ?? 1,
   episodes: s.episodes ?? 1,
+  size_gb: s.sizeGb ?? 0,
   source: s.source ?? "Original",
   poster_color: s.posterColor ?? "from-rose-700 via-red-900 to-zinc-950",
   poster_image: s.posterImage ?? null,
@@ -667,6 +669,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (patch.imdb !== undefined) row.imdb = r.imdb;
       if (patch.seasons !== undefined) row.seasons = r.seasons;
       if (patch.episodes !== undefined) row.episodes = r.episodes;
+      if (patch.sizeGb !== undefined) row.size_gb = r.size_gb;
       if (patch.source !== undefined) row.source = r.source;
       if (patch.posterColor !== undefined) row.poster_color = r.poster_color;
       if (patch.posterImage !== undefined) row.poster_image = r.poster_image;

@@ -35,6 +35,7 @@ const blank = (): Series => ({
   imdb: 8,
   seasons: 1,
   episodes: 10,
+  sizeGb: 0,
   source: "Original",
   posterColor: GRADIENTS[0],
   trailerUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
@@ -114,6 +115,7 @@ export function SeriesFormDialog({ open, onOpenChange, series }: { open: boolean
           <Field label="IMDB"><Input type="number" step="0.1" value={form.imdb} onChange={(e) => set("imdb", Number(e.target.value))} /></Field>
           <Field label={t("seasons")}><Input type="number" value={form.seasons} onChange={(e) => set("seasons", Number(e.target.value))} /></Field>
           <Field label={t("episodes")}><Input type="number" value={form.episodes} onChange={(e) => set("episodes", Number(e.target.value))} /></Field>
+          <Field label={lang === "ar" ? "الحجم (GB)" : "Size (GB)"}><Input type="number" step="0.1" value={form.sizeGb} onChange={(e) => set("sizeGb", Number(e.target.value))} /></Field>
           <Field label={`${t("price")} (YER)`}><Input type="number" value={form.price} onChange={(e) => set("price", Number(e.target.value))} /></Field>
           <Field label={t("trailer_url")}><Input value={form.trailerUrl} onChange={(e) => set("trailerUrl", e.target.value)} /></Field>
         </div>

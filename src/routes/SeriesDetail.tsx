@@ -108,6 +108,7 @@ export default function SeriesDetail() {
                 <span>{s.year}</span>
                 <span>· {s.seasons} {t("seasons")}</span>
                 <span>· {s.episodes} {t("episodes")}</span>
+                {s.sizeGb > 0 && <span>· {s.sizeGb} {lang === "ar" ? "جيجابايت" : "GB"}</span>}
                 <span className="rounded bg-white/10 px-2 py-0.5 text-xs">{s.source}</span>
                 {s.genres.map((g) => <span key={g.en} className="rounded bg-white/5 px-2 py-0.5 text-xs">{g[lang]}</span>)}
               </div>

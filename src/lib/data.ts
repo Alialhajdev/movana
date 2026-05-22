@@ -11,6 +11,7 @@ export interface Series {
   imdb: number;
   seasons: number;
   episodes: number;
+  sizeGb: number;
   source: string;
   posterColor: string; // gradient seed (fallback)
   posterImage?: string;
@@ -64,6 +65,7 @@ const make = (
   imdb,
   seasons,
   episodes,
+  sizeGb: 0,
   source: category === "netflix" ? "Netflix" : category === "appletv" ? "Apple TV+" : "Original",
   posterColor: colors[parseInt(id, 36) % colors.length] ?? colors[0],
   trailerUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
