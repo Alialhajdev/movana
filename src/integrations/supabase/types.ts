@@ -453,6 +453,7 @@ export type Database = {
       site_settings: {
         Row: {
           id: number
+          logo_size: string
           logo_text: string
           logo_url: string | null
           popup_active: boolean
@@ -467,6 +468,7 @@ export type Database = {
         }
         Insert: {
           id?: number
+          logo_size?: string
           logo_text?: string
           logo_url?: string | null
           popup_active?: boolean
@@ -481,6 +483,7 @@ export type Database = {
         }
         Update: {
           id?: number
+          logo_size?: string
           logo_text?: string
           logo_url?: string | null
           popup_active?: boolean

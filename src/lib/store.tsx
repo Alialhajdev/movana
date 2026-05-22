@@ -85,9 +85,11 @@ export interface Slide {
 export type ThemePreset = "red" | "gold" | "blue" | "emerald" | "violet" | "rose";
 export type ThemeMode = "dark" | "light";
 
+export type LogoSize = "sm" | "md" | "lg" | "xl";
 export interface Settings {
   logoText: string;
   logoUrl?: string;
+  logoSize: LogoSize;
   themePreset: ThemePreset;
   themeMode: ThemeMode;
   popupActive: boolean;
@@ -398,6 +400,7 @@ const mapReview = (r: any): Review => ({
 const mapSettings = (r: any): Settings => ({
   logoText: r.logo_text ?? "MOVANA",
   logoUrl: r.logo_url ?? undefined,
+  logoSize: (r.logo_size ?? "md") as LogoSize,
   themePreset: (r.theme_preset ?? "red") as ThemePreset,
   themeMode: (r.theme_mode ?? "dark") as ThemeMode,
   popupActive: !!r.popup_active,
@@ -448,7 +451,7 @@ function applyTheme(s: Settings) {
   else r.classList.add("dark");
 }
 
-const defaultSettings: Settings = { logoText: "MOVANA", logoUrl: undefined, themePreset: "red", themeMode: "dark", popupActive: false };
+const defaultSettings: Settings = { logoText: "MOVANA", logoUrl: undefined, logoSize: "md", themePreset: "red", themeMode: "dark", popupActive: false };
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -815,6 +818,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       await supabase.from("site_settings").update({
         logo_text: merged.logoText,
         logo_url: merged.logoUrl ?? null,
+        logo_size: merged.logoSize,
         theme_preset: merged.themePreset,
         theme_mode: merged.themeMode,
         popup_active: merged.popupActive,
