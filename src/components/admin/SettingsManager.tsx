@@ -156,10 +156,10 @@ export function SettingsManager() {
                 alt="logo"
                 className={cn(
                   "w-auto object-contain block",
-                  settings.logoSize === "sm" && "h-8",
-                  settings.logoSize === "md" && "h-12",
-                  settings.logoSize === "lg" && "h-16",
-                  settings.logoSize === "xl" && "h-20",
+                  settings.logoSize === "sm" && "h-20",
+                  settings.logoSize === "md" && "h-28",
+                  settings.logoSize === "lg" && "h-36",
+                  settings.logoSize === "xl" && "h-44",
                 )}
               />
             ) : (
