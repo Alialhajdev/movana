@@ -123,7 +123,7 @@ export function SettingsManager() {
           <span className="text-xs text-muted-foreground">{t("preview")}:</span>
           <div className="flex items-center font-display text-2xl tracking-wider text-primary leading-none">
             {logoUrl ? (
-              <img src={logoUrl} alt="logo" className="h-8 w-auto object-contain block" />
+              <img src={logoUrl} alt="logo" className="h-12 w-auto object-contain block" />
             ) : (
               <span>{logoText || "MOVANA"}</span>
             )}
