@@ -52,7 +52,17 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-4 px-4 md:px-10">
         <Link to="/" className="flex items-center font-display text-2xl tracking-wider text-primary leading-none">
           {settings.logoUrl ? (
-            <img src={settings.logoUrl} alt={settings.logoText} className="h-12 w-auto object-contain block" />
+            <img
+              src={settings.logoUrl}
+              alt={settings.logoText}
+              className={cn(
+                "w-auto object-contain block",
+                settings.logoSize === "sm" && "h-8",
+                settings.logoSize === "md" && "h-12",
+                settings.logoSize === "lg" && "h-16",
+                settings.logoSize === "xl" && "h-20",
+              )}
+            />
           ) : (
             <span>{settings.logoText}</span>
           )}
