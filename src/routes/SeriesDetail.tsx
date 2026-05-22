@@ -88,7 +88,7 @@ export default function SeriesDetail() {
     <>
       <Header />
       <main className="pb-24 md:pb-12">
-        <section className="relative h-[80vh] min-h-[560px] w-full overflow-hidden">
+        <section className="relative min-h-[80vh] w-full overflow-hidden pb-12">
           {s.backgroundImage ? (
             <img src={s.backgroundImage} alt="" className="absolute inset-0 size-full object-cover object-top" />
           ) : (
